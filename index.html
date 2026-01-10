@@ -51,7 +51,23 @@
             </form>
         </section>
 
+        <section class="comments">
+            <h2>Comments</h2>
+            <p class="inquiry-subtitle">Share your thoughts below.</p>
+            <div id="disqus_thread"></div>
+        </section>
+
     </div>
+    <script>
+        (function () {
+            const d = document;
+            const s = d.createElement('script');
+            s.src = 'https://davidjune-pages-dev.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', Date.now().toString());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
     <script src="main.js"></script>
 </body>
 </html>
