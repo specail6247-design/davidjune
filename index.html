@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lotto Pro - Number Generator</title>
+    <meta name="description" content="Lotto Pro is a transparent, user-first lottery number generator with optional number picks, a clear fairness note, and a responsible-use guide.">
     <meta name="google-adsense-account" content="ca-pub-7636394072348808">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7636394072348808"
         crossorigin="anonymous"></script>
@@ -20,6 +21,39 @@
                     <h1>Lotto Pro</h1>
                     <p>Pick your numbers or generate them randomly!</p>
                 </header>
+
+                <nav class="page-nav" aria-label="Site">
+                    <a href="#about">About</a>
+                    <a href="#how">How It Works</a>
+                    <a href="#fair">Fairness</a>
+                    <a href="#faq">FAQ</a>
+                    <a href="#inquiry">Partnership</a>
+                    <a href="#comments">Comments</a>
+                    <a href="#policy">Privacy</a>
+                </nav>
+
+                <section class="intro" id="about">
+                    <h2>About Lotto Pro</h2>
+                    <p>
+                        Lotto Pro is a lightweight tool for exploring random number picks. It focuses on clarity,
+                        a clean interface, and transparent behavior. You can pre-select up to six numbers, and the
+                        app fills the rest with random unique picks between 1 and 45.
+                    </p>
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <h3>Unique Picks</h3>
+                            <p>No duplicates. Every generated set contains six unique numbers.</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>Optional Control</h3>
+                            <p>Pick your favorites first, then let the generator complete the set.</p>
+                        </div>
+                        <div class="info-card">
+                            <h3>Transparent UX</h3>
+                            <p>Clear controls, visible state, and immediate feedback.</p>
+                        </div>
+                    </div>
+                </section>
                 
                 <div class="lotto-display"></div>
 
@@ -32,7 +66,42 @@
                 <h2>Choose your own numbers (optional)</h2>
                 <div class="number-grid"></div>
 
-                <section class="inquiry">
+                <section class="guide" id="how">
+                    <h2>How It Works</h2>
+                    <ol class="steps">
+                        <li>Select up to six numbers from the grid.</li>
+                        <li>Click Generate to complete a six-number set.</li>
+                        <li>Click Clear to reset and try again.</li>
+                    </ol>
+                </section>
+
+                <section class="guide" id="fair">
+                    <h2>Fairness & Responsible Use</h2>
+                    <p>
+                        This tool does not increase odds or guarantee outcomes. It provides random selections for
+                        entertainment and educational use. Always follow local laws and play responsibly.
+                    </p>
+                </section>
+
+                <section class="guide" id="faq">
+                    <h2>FAQ</h2>
+                    <div class="faq">
+                        <div>
+                            <h3>Are the numbers truly random?</h3>
+                            <p>The generator uses browser randomness to select unique numbers between 1 and 45.</p>
+                        </div>
+                        <div>
+                            <h3>Do you store my picks?</h3>
+                            <p>No. Picks remain in your browser and are cleared when you reset.</p>
+                        </div>
+                        <div>
+                            <h3>Can I save multiple sets?</h3>
+                            <p>Not yet. This version focuses on a fast single-set experience.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="inquiry" id="inquiry">
                     <h2>Partnership Inquiry</h2>
                     <p class="inquiry-subtitle">Let us know how you'd like to collaborate.</p>
                     <form class="inquiry-form" action="https://formspree.io/f/maqqwbvz" method="POST">
@@ -56,10 +125,19 @@
                     </form>
                 </section>
 
-                <section class="comments">
+                <section class="comments" id="comments">
                     <h2>Comments</h2>
                     <p class="inquiry-subtitle">Share your thoughts below.</p>
                     <div id="disqus_thread"></div>
+                </section>
+
+                <section class="policy" id="policy">
+                    <h2>Privacy & Data</h2>
+                    <p>
+                        This site uses Google AdSense to display ads, which may use cookies or device identifiers
+                        to personalize and measure advertising. The webcam feature runs locally in your browser and
+                        does not upload video. Contact form submissions are sent to Formspree for delivery.
+                    </p>
                 </section>
             </main>
 
