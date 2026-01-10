@@ -1,14 +1,57 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
-  <link href='/style.css' rel='stylesheet'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lotto Pro - Number Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Hello, world!</h1>
-  <button onclick="console.log('hello');">Press me</button>
-  <script defer type="text/javascript" src="/main.js"></script>
+    <div class="container">
+        <header>
+            <h1>Lotto Pro</h1>
+            <p>Pick your numbers or generate them randomly!</p>
+        </header>
+        
+        <div class="lotto-display"></div>
+
+        <div class="controls">
+            <button class="btn generate-btn">Generate</button>
+            <button class="btn clear-btn">Clear</button>
+            <button class="btn toggle-btn" type="button" aria-pressed="false">Light Mode</button>
+        </div>
+
+        <h2>Choose your own numbers (optional)</h2>
+        <div class="number-grid"></div>
+
+        <section class="inquiry">
+            <h2>Partnership Inquiry</h2>
+            <p class="inquiry-subtitle">Let us know how you'd like to collaborate.</p>
+            <form class="inquiry-form" action="https://formspree.io/f/maqqwbvz" method="POST">
+                <label class="field">
+                    <span>Name</span>
+                    <input type="text" name="name" placeholder="Your name" required>
+                </label>
+                <label class="field">
+                    <span>Email</span>
+                    <input type="email" name="email" placeholder="you@example.com" required>
+                </label>
+                <label class="field">
+                    <span>Company</span>
+                    <input type="text" name="company" placeholder="Company or project">
+                </label>
+                <label class="field full">
+                    <span>Message</span>
+                    <textarea name="message" rows="4" placeholder="Tell us about the partnership" required></textarea>
+                </label>
+                <button class="btn submit-btn" type="submit">Send Inquiry</button>
+            </form>
+        </section>
+
+    </div>
+    <script src="main.js"></script>
 </body>
 </html>
