@@ -11,52 +11,68 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>Lotto Pro</h1>
-            <p>Pick your numbers or generate them randomly!</p>
-        </header>
-        
-        <div class="lotto-display"></div>
+        <div class="layout">
+            <main class="main-content">
+                <header>
+                    <h1>Lotto Pro</h1>
+                    <p>Pick your numbers or generate them randomly!</p>
+                </header>
+                
+                <div class="lotto-display"></div>
 
-        <div class="controls">
-            <button class="btn generate-btn">Generate</button>
-            <button class="btn clear-btn">Clear</button>
-            <button class="btn toggle-btn" type="button" aria-pressed="false">Light Mode</button>
+                <div class="controls">
+                    <button class="btn generate-btn">Generate</button>
+                    <button class="btn clear-btn">Clear</button>
+                    <button class="btn toggle-btn" type="button" aria-pressed="false">Light Mode</button>
+                </div>
+
+                <h2>Choose your own numbers (optional)</h2>
+                <div class="number-grid"></div>
+
+                <section class="inquiry">
+                    <h2>Partnership Inquiry</h2>
+                    <p class="inquiry-subtitle">Let us know how you'd like to collaborate.</p>
+                    <form class="inquiry-form" action="https://formspree.io/f/maqqwbvz" method="POST">
+                        <label class="field">
+                            <span>Name</span>
+                            <input type="text" name="name" placeholder="Your name" required>
+                        </label>
+                        <label class="field">
+                            <span>Email</span>
+                            <input type="email" name="email" placeholder="you@example.com" required>
+                        </label>
+                        <label class="field">
+                            <span>Company</span>
+                            <input type="text" name="company" placeholder="Company or project">
+                        </label>
+                        <label class="field full">
+                            <span>Message</span>
+                            <textarea name="message" rows="4" placeholder="Tell us about the partnership" required></textarea>
+                        </label>
+                        <button class="btn submit-btn" type="submit">Send Inquiry</button>
+                    </form>
+                </section>
+
+                <section class="comments">
+                    <h2>Comments</h2>
+                    <p class="inquiry-subtitle">Share your thoughts below.</p>
+                    <div id="disqus_thread"></div>
+                </section>
+            </main>
+
+            <aside class="side-banner">
+                <section class="tm-panel">
+                    <h2>Hand Sign Test</h2>
+                    <p class="inquiry-subtitle">Try your Rock / Paper / Scissors model.</p>
+                    <div class="tm-actions">
+                        <button type="button" class="btn tm-start-btn">Start</button>
+                        <span class="tm-status" id="tm-status">Waiting for model URL...</span>
+                    </div>
+                    <div class="tm-preview" id="webcam-container"></div>
+                    <div class="tm-labels" id="label-container"></div>
+                </section>
+            </aside>
         </div>
-
-        <h2>Choose your own numbers (optional)</h2>
-        <div class="number-grid"></div>
-
-        <section class="inquiry">
-            <h2>Partnership Inquiry</h2>
-            <p class="inquiry-subtitle">Let us know how you'd like to collaborate.</p>
-            <form class="inquiry-form" action="https://formspree.io/f/maqqwbvz" method="POST">
-                <label class="field">
-                    <span>Name</span>
-                    <input type="text" name="name" placeholder="Your name" required>
-                </label>
-                <label class="field">
-                    <span>Email</span>
-                    <input type="email" name="email" placeholder="you@example.com" required>
-                </label>
-                <label class="field">
-                    <span>Company</span>
-                    <input type="text" name="company" placeholder="Company or project">
-                </label>
-                <label class="field full">
-                    <span>Message</span>
-                    <textarea name="message" rows="4" placeholder="Tell us about the partnership" required></textarea>
-                </label>
-                <button class="btn submit-btn" type="submit">Send Inquiry</button>
-            </form>
-        </section>
-
-        <section class="comments">
-            <h2>Comments</h2>
-            <p class="inquiry-subtitle">Share your thoughts below.</p>
-            <div id="disqus_thread"></div>
-        </section>
-
     </div>
     <script>
         (function () {
@@ -68,6 +84,8 @@
         })();
     </script>
     <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
     <script src="main.js"></script>
 </body>
 </html>

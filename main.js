@@ -42,6 +42,10 @@ const generateBtn = document.querySelector('.generate-btn');
 const clearBtn = document.querySelector('.clear-btn');
 const toggleBtn = document.querySelector('.toggle-btn');
 const numberGrid = document.querySelector('.number-grid');
+const tmStartBtn = document.querySelector('.tm-start-btn');
+const tmStatus = document.getElementById('tm-status');
+const tmWebcamContainer = document.getElementById('webcam-container');
+const tmLabelContainer = document.getElementById('label-container');
 
 // --- State ---
 let selectedNumbers = new Set();
@@ -108,6 +112,65 @@ function clearAll() {
     });
 }
 
+// --- Teachable Machine (Rock/Paper/Scissors) ---
+const TM_MODEL_URL = "YOUR_TEACHABLE_MACHINE_MODEL_URL/";
+let tmModel = null;
+let tmWebcam = null;
+let tmMaxPredictions = 0;
+let tmRunning = false;
+
+async function tmInit() {
+    if (!tmStartBtn || !tmStatus || !tmWebcamContainer || !tmLabelContainer) return;
+    if (tmRunning) return;
+    if (TM_MODEL_URL === "YOUR_TEACHABLE_MACHINE_MODEL_URL/") {
+        tmStatus.textContent = "Set your Teachable Machine model URL first.";
+        return;
+    }
+    if (!window.tmImage) {
+        tmStatus.textContent = "Teachable Machine library not loaded.";
+        return;
+    }
+    try {
+        tmRunning = true;
+        tmStatus.textContent = "Loading model...";
+        const modelURL = TM_MODEL_URL + "model.json";
+        const metadataURL = TM_MODEL_URL + "metadata.json";
+        tmModel = await window.tmImage.load(modelURL, metadataURL);
+        tmMaxPredictions = tmModel.getTotalClasses();
+        tmWebcam = new window.tmImage.Webcam(260, 260, true);
+        tmStatus.textContent = "Requesting camera...";
+        await tmWebcam.setup();
+        await tmWebcam.play();
+        tmWebcamContainer.innerHTML = "";
+        tmWebcamContainer.appendChild(tmWebcam.canvas);
+        tmLabelContainer.innerHTML = "";
+        for (let i = 0; i < tmMaxPredictions; i++) {
+            tmLabelContainer.appendChild(document.createElement("div"));
+        }
+        tmStatus.textContent = "Running...";
+        window.requestAnimationFrame(tmLoop);
+    } catch (error) {
+        tmRunning = false;
+        tmStatus.textContent = "Unable to start webcam. Check permissions.";
+        console.error(error);
+    }
+}
+
+async function tmLoop() {
+    if (!tmRunning || !tmWebcam || !tmModel) return;
+    tmWebcam.update();
+    await tmPredict();
+    window.requestAnimationFrame(tmLoop);
+}
+
+async function tmPredict() {
+    const prediction = await tmModel.predict(tmWebcam.canvas);
+    for (let i = 0; i < tmMaxPredictions; i++) {
+        const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+        tmLabelContainer.childNodes[i].textContent = classPrediction;
+    }
+}
+
 function setTheme(theme) {
     document.body.dataset.theme = theme;
     const isLight = theme === 'light';
@@ -126,6 +189,9 @@ numberGrid.addEventListener('click', handleGridClick);
 generateBtn.addEventListener('click', generateLottoNumbers);
 clearBtn.addEventListener('click', clearAll);
 toggleBtn.addEventListener('click', toggleTheme);
+if (tmStartBtn) {
+    tmStartBtn.addEventListener('click', tmInit);
+}
 
 // --- Initial Load ---
 createNumberGrid();
