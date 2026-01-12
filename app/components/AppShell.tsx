@@ -1,6 +1,5 @@
 'use client';
 
-import { MobileOnlyGate } from './MobileOnlyGate';
 import { EmojiTabBar } from './EmojiTabBar';
 
 type AppShellProps = {
@@ -9,11 +8,9 @@ type AppShellProps = {
 
 export const AppShell = ({ children }: AppShellProps) => {
   return (
-    <MobileOnlyGate>
-      <div className="app-shell">
-        <main className="app-content">{children}</main>
-        <EmojiTabBar />
-      </div>
+    <div className="app-shell">
+      <main className="app-content">{children}</main>
+      <EmojiTabBar />
       <style jsx>{`
         .app-shell {
           min-height: 100vh;
@@ -33,6 +30,6 @@ export const AppShell = ({ children }: AppShellProps) => {
           --emoji-size: 32px;
         }
       `}</style>
-    </MobileOnlyGate>
+    </div>
   );
 };
