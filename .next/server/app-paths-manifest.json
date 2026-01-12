@@ -2,5 +2,7 @@
   "/app/feed/page": "app/app/feed/page.js",
   "/app/explore/page": "app/app/explore/page.js",
   "/app/profile/page": "app/app/profile/page.js",
-  "/app/upgrade/page": "app/app/upgrade/page.js"
+  "/app/upgrade/page": "app/app/upgrade/page.js",
+  "/app/post/page": "app/app/post/page.js",
+  "/app/missions/page": "app/app/missions/page.js"
 }

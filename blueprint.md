@@ -1,32 +1,70 @@
-# EmojiWorld Blueprint
+# ✨ EmojiWorld 프로젝트 청사진
 
-## Overview
+## 📍 1. 프로젝트 개요
 
-EmojiWorld is a modern, interactive web application that allows users to send and receive emojis in real-time. It leverages the power of Firebase for backend services, providing a seamless and engaging user experience.
+EmojiWorld는 사용자들이 이모지만으로 자신의 감정과 일상을 공유하고 소통하는 새로운 형태의 소셜 미디어 플랫폼입니다. 텍스트 중심의 소통에서 벗어나, 이모지가 가진 직관성과 감성적 표현력을 극대화하여 사용자들에게 즐겁고 유쾌한 커뮤니케이션 경험을 제공하는 것을 목표로 합니다.
 
-## Implemented Features (Version 1.0)
+- **핵심 컨셉:** 이모지 기반의 소셜 피드, 미션, 랭킹 시스템
+- **기술 스택:** Next.js, TypeScript, Firebase
+- **디자인 철학:** 모바일 우선, 이모지 중심의 미니멀하고 생동감 있는 UI/UX
 
-### Core Setup
-- **Next.js Framework:** The project is built on the latest version of Next.js, providing a robust and performant foundation.
-- **Firebase Integration:**
-    - Securely configured Firebase project credentials in the environment.
-    - Established a Firebase initialization script (`lib/firebase.ts`) to connect to Firebase services (Authentication, Firestore, Cloud Messaging).
-- **Dependency Management & Security:**
-    - Installed all necessary dependencies using `npm`.
-    - Resolved all critical, high, and moderate security vulnerabilities by updating and overriding dependencies, ensuring the project is secure and stable.
+---
 
-## Current Plan: Building the Core App
+## 🎨 2. 스타일, 디자인 및 기능 명세
 
-This plan outlines the steps to build the fundamental features of EmojiWorld, enabling users to interact with the application.
+### 초기 버전 (v1.0)
 
-### 1. Create the Main Application Page
-- **File:** `app/page.tsx`
-- **Action:** Develop the main user interface where users can see and send emojis.
+- **레이아웃:**
+    - **모바일:** 하단 탭 네비게이션을 갖춘 앱 형태의 `AppShell` 레이아웃
+    - **데스크탑:** 관리자 전용 기능 제공을 위한 `AdminLayout` (사이드바 메뉴)
+    - 반응형 설계를 통해 768px 이상일 경우 데스크탑 레이아웃, 이하일 경우 모바일 레이아웃을 동적으로 표시
+- **핵심 기능:**
+    - **Firebase 연동:** Firebase SDK 초기화 및 기본 설정
+    - **사용자 인증:** 이메일/비밀번호 기반의 회원가입 및 로그인 기능 (`/login`, `/signup`)
+    - **데이터 관리:** Firestore를 활용한 사용자 프로필, 게시물, 미션 데이터 관리
+    - **푸시 알림:** Firebase Cloud Messaging (FCM)을 통한 푸시 알림 권한 요청 및 토큰 관리
+- **UI/UX:**
+    - 전반적인 디자인 시스템 (`colors`, `fonts`, `shadows`) 정의
+    - 그라데이션 텍스트, 배경 오브젝트 애니메이션 등 생동감 있는 시각 효과 적용
+    - 직관적인 이모지 중심의 아이콘 및 버튼 디자인
 
-### 2. Implement Firebase Cloud Messaging (FCM) Support
-- **File:** `app/firebase-messaging-sw.ts`
-- **Action:** Create the service worker file required for Firebase to handle incoming push notifications in the background.
+---
 
-### 3. Request Notification Permissions
-- **File:** `app/page.tsx`
-- **Action:** Add logic to request the user's permission to send notifications, a crucial step for enabling push alerts.
+## 🚀 3. 현재 개발 계획: "인사이트를 더한 즐거운 소통"
+
+인스타그램처럼 사용자들이 즐겁게 소통하고, 그 과정에서 의미 있는 인사이트를 얻을 수 있는 기능을 구현합니다.
+
+### 🎯 목표
+
+- **소통 강화:** 사용자들이 게시물에 반응하고 댓글을 달며 상호작용할 수 있는 기능을 추가합니다.
+- **인사이트 제공:** 사용자 활동 데이터를 기반으로 의미 있는 통계와 개인화된 피드백을 제공합니다.
+
+### ✅ 단계별 실행 계획
+
+#### **1단계: 반응(Reaction) 기능 구현 (현재 진행)**
+
+**설명:** 모든 인사이트의 기초가 될 핵심 데이터를 수집하기 위해, 게시물에 대한 반응 기능을 먼저 구현합니다. 사용자가 게시물의 '😍', '😂' 같은 이모지를 탭하면, 어떤 사용자가 어떤 반응을 보였는지 Firestore에 기록하고, 각 게시물 별 반응 개수를 화면에 표시합니다.
+
+- **작업 내용:**
+    1.  Firestore에 `reactions` 컬렉션 스키마 설계
+    2.  사용자가 반응 이모지를 클릭했을 때 Firestore에 데이터를 쓰고 업데이트하는 로직 구현
+    3.  각 게시물 카드에 반응 별 개수를 표시하는 UI 컴포넌트 추가
+
+#### **2단계: 댓글(Comment) 기능 구현**
+
+- **작업 내용:**
+    1.  게시물 상세 페이지 또는 댓글 보기 모달(Modal) UI 구현
+    2.  Firestore에 `comments` 컬렉션 스키마 설계 및 데이터 연동
+    3.  댓글 작성, 조회, 삭제 기능 구현
+
+#### **3단계: 인사이트 대시보드 구축**
+
+- **작업 내용:**
+    1.  관리자 페이지(`/admin`)에 '인사이트' 섹션 추가
+    2.  수집된 반응 및 댓글 데이터를 기반으로 인기 게시물, 가장 많이 사용된 감정 이모지, 시간대별 활동량 등 주요 지표 시각화 (차트 라이브러리 사용)
+
+#### **4단계: 개인화 피드백 기능**
+
+- **작업 내용:**
+    1.  사용자 프로필 페이지에 '나의 활동 분석' 영역 추가
+    2.  개별 사용자의 이모지 사용 패턴을 분석하여 "당신은 긍정 에너지가 넘치는 사람! ✨" 과 같은 재미있고 개인화된 메시지를 생성하여 보여줌
