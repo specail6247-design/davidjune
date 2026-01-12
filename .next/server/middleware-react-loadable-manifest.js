@@ -1,0 +1,1 @@
+self.__REACT_LOADABLE_MANIFEST="{\"app/app/missions/page.tsx -> ../../../lib/missionsV2Client\":{\"id\":\"app/app/missions/page.tsx -> ../../../lib/missionsV2Client\",\"files\":[]},\"app/app/profile/page.tsx -> ../../../lib/monetizationClient\":{\"id\":\"app/app/profile/page.tsx -> ../../../lib/monetizationClient\",\"files\":[]}}"

@@ -13,15 +13,16 @@
   idx = {
     # Search for the extensions you want on https://open-vsx.org/ and use "publisher.id"
     extensions = [
-      # "vscodevim.vim"
       "google.gemini-cli-vscode-ide-companion"
+      "anthropic.claude-vscode"
+      "opencode.opencode-ai"
     ];
     # Enable previews and customize configuration
     previews = {
       enable = true;
       previews = {
         web = {
-          command = ["python3" "-m" "http.server" "$PORT" "--bind" "0.0.0.0"];
+          command = [ "python3" "-m" "http.server" "$PORT" "--bind" "0.0.0.0" ];
           manager = "web";
         };
       };
@@ -39,6 +40,8 @@
       onStart = {
         # Example: start a background task to watch and re-build backend code
         # watch-backend = "npm run watch-backend";
+        install-clis = "npm install -g @google/gemini-cli openai @anthropic-ai/claude-code opencode-ai";
+        welcome_message = "echo '\n✅ CLIs installed: Gemini (gemini), OpenAI (openai), Claude (claude), Opencode (opencode)' && echo '\n✅ Project files:' && ls && echo ''";
       };
     };
   };

@@ -1,0 +1,4 @@
+{
+  "name": "davidworld",
+  "postCreateCommand": "bash ./scripts/firebase-startup.sh"
+}
