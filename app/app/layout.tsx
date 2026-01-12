@@ -5,30 +5,39 @@ import { useState, useEffect } from 'react';
 import { AppShell } from '../components/AppShell';
 import { AdminLayout } from '../components/AdminLayout';
 
-const useMediaQuery = (query: string) => {
-  const [matches, setMatches] = useState(false);
+const useIsDesktop = () => {
+  const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
-    const media = window.matchMedia(query);
-    if (media.matches !== matches) {
-      setMatches(media.matches);
-    }
-    const listener = () => {
-      setMatches(media.matches);
+    const mediaQuery = window.matchMedia('(min-width: 768px)');
+    const handleChange = (e: MediaQueryListEvent) => {
+      setIsDesktop(e.matches);
     };
-    media.addEventListener('change', listener);
-    return () => media.removeEventListener('change', listener);
-  }, [matches, query]);
 
-  return matches;
+    // Set the initial value
+    setIsDesktop(mediaQuery.matches);
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  return isDesktop;
 };
 
-
-
 export default function ResponsiveLayout({ children }: { children: React.ReactNode }) {
-    const isDesktop = useMediaQuery('(min-width: 768px)');
+    const isDesktop = useIsDesktop();
+    const [isClient, setIsClient] = useState(false);
 
-  return isDesktop ? <AdminLayout>{children}</AdminLayout> : <AppShell>{children}</AppShell>;
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
+    if (!isClient) {
+        // On the server, and initial client render, render nothing or a loading indicator
+        // to prevent hydration mismatch.
+        return null; 
+    }
+
+    return isDesktop ? <AdminLayout>{children}</AdminLayout> : <AppShell>{children}</AppShell>;
 }
-
 
