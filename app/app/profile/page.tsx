@@ -6,7 +6,7 @@ import { auth } from '../../../lib/firebase';
 import { useSearchParams } from 'next/navigation';
 import { emojiDataset, mobileOptimizedSets, recommendedDefaultAvatars } from '../../../lib/emojiDataset';
 import { EmojiPickerModal } from '../../components/EmojiPickerModal';
-import { upsertUserProfile } from '../../../lib/userProfilesClient';
+import { upsertUserProfile, getUserProfile } from '../../../lib/userProfilesClient';
 import { GIFT_TIERS, PLAN_CONFIG } from '../../../lib/monetizationConfig';
 import {
   devGrantGift,
@@ -35,6 +35,8 @@ const ProfilePage = () => {
   const [avatarEmoji, setAvatarEmoji] = useState('🙂');
   const [countryEmoji, setCountryEmoji] = useState('🌍');
   const [moodEmoji, setMoodEmoji] = useState('🙂');
+  const [bio, setBio] = useState('');
+  const [isEditingBio, setIsEditingBio] = useState(false);
   const [picker, setPicker] = useState<'avatar' | 'country' | 'mood' | null>(null);
   const [emojiSize, setEmojiSize] = useState('32px');
   const [subscription, setSubscription] = useState<{ plan: 'basic' | 'plus' | 'elite' } | null>(null);
@@ -60,7 +62,9 @@ const ProfilePage = () => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUserId(user?.uid ?? 'demo-user');
+        if (user) {
+            setUserId(user.uid);
+        }
     });
     return () => unsubscribe();
   }, []);
@@ -78,17 +82,31 @@ const ProfilePage = () => {
   }, [emojiSize]);
 
   useEffect(() => {
-    upsertUserProfile({
+    if (!userId || userId === 'demo-user') return;
+
+    const profileData = {
       userId,
       avatarEmoji,
       countryEmoji,
       visualIntensity,
-    }).catch(() => {});
+    };
+    upsertUserProfile(profileData).catch(() => {});
     window.localStorage.setItem('emojiworld_mood', moodEmoji);
   }, [userId, avatarEmoji, countryEmoji, moodEmoji, visualIntensity]);
 
   useEffect(() => {
+    if (!userId || userId === 'demo-user') return;
+
     const load = async () => {
+      // Load user profile, including bio
+      const userProfile = await getUserProfile(userId);
+      if (userProfile) {
+        setAvatarEmoji(userProfile.avatarEmoji || '🙂');
+        setCountryEmoji(userProfile.countryEmoji || '🌍');
+        setBio(userProfile.bio || '');
+        setVisualIntensity(userProfile.visualIntensity || 'M');
+      }
+
       const sub = await getSubscription(userId);
       if (sub) {
         setSubscription(sub);
@@ -113,6 +131,12 @@ const ProfilePage = () => {
     };
     load().catch(() => {});
   }, [userId]);
+
+  const handleBioSave = async () => {
+    if (!userId) return;
+    await upsertUserProfile({ userId, bio });
+    setIsEditingBio(false);
+  };
 
   const handleReveal = async () => {
     try {
@@ -191,6 +215,31 @@ const ProfilePage = () => {
           {moodEmoji}
         </button>
       </div>
+
+      {/* Bio Section */}
+      <div className="panel bio-panel">
+        {isEditingBio ? (
+          <div className="bio-editor">
+            <textarea
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              placeholder="Tell us about yourself..."
+              maxLength={150}
+            />
+            <div className="bio-actions">
+                <span className="char-count">{bio.length} / 150</span>
+                <button onClick={handleBioSave} className="save-btn">Save</button>
+                <button onClick={() => setIsEditingBio(false)} className="cancel-btn">Cancel</button>
+            </div>
+          </div>
+        ) : (
+          <div className="bio-display">
+            <p>{bio || 'No bio yet. Click edit to add one!'}</p>
+            <button onClick={() => setIsEditingBio(true)} className="edit-btn">Edit Bio</button>
+          </div>
+        )}
+      </div>
+
       <div className="row">
         <div className="status-pill" aria-label={explorerLabel}>
           {explorerLabel}
@@ -429,6 +478,54 @@ const ProfilePage = () => {
           display: grid;
           gap: 12px;
         }
+        .bio-panel {
+            padding: 20px;
+        }
+        .bio-display p {
+            margin: 0 0 16px 0;
+            color: #555;
+            line-height: 1.6;
+        }
+        .edit-btn, .save-btn, .cancel-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .edit-btn {
+            background-color: var(--gray-200);
+            color: var(--gray-800);
+        }
+        .bio-editor textarea {
+            width: 100%;
+            min-height: 80px;
+            border-radius: 8px;
+            border: 1px solid var(--gray-300);
+            padding: 12px;
+            font-size: 15px;
+            resize: vertical;
+            margin-bottom: 12px;
+        }
+        .bio-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .char-count {
+            font-size: 12px;
+            color: #6c757d;
+            flex-grow: 1;
+        }
+        .save-btn {
+            background-color: var(--lime);
+            color: #000;
+        }
+        .cancel-btn {
+            background-color: transparent;
+            color: #6c757d;
+        }
+
         .panel-row {
           display: flex;
           gap: 10px;

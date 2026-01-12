@@ -6,6 +6,7 @@ export type UserProfile = {
   userId: string;
   avatarEmoji: string;
   countryEmoji: string;
+  bio?: string; // Add bio field
   visualIntensity?: 'S' | 'M' | 'L';
   createdAt?: unknown;
   updatedAt?: unknown;
@@ -21,13 +22,17 @@ export const getUserProfile = async (userId: string) => {
   return snapshot.data() as UserProfile;
 };
 
-export const upsertUserProfile = async (profile: UserProfile) => {
-  if (!isEmojiOnly(profile.avatarEmoji) || !isEmojiOnly(profile.countryEmoji)) {
-    throw new Error('Profile emojis must be emoji-only');
+export const upsertUserProfile = async (profile: Partial<UserProfile> & { userId: string }) => {
+  if (profile.avatarEmoji && !isEmojiOnly(profile.avatarEmoji)) {
+    throw new Error('Avatar emoji must be emoji-only');
   }
+  if (profile.countryEmoji && !isEmojiOnly(profile.countryEmoji)) {
+    throw new Error('Country emoji must be emoji-only');
+  }
+
   await setDoc(
     doc(firestore, PROFILES_COLLECTION, profile.userId),
-    { ...profile, updatedAt: serverTimestamp(), createdAt: serverTimestamp() },
+    { ...profile, updatedAt: serverTimestamp() },
     { merge: true },
   );
 };
