@@ -1,11 +1,9 @@
+'use client';
+
+import { SessionProvider } from 'next-auth/react';
 import { AuthProvider } from '../lib/AuthContext';
 import { Footer } from './components/Footer';
-import './globals.css'; // We will create this file next
-
-export const metadata = {
-  title: 'EmojiWorld',
-  description: 'A social platform for expressing emotions with only emojis.',
-};
+import './globals.css';
 
 export default function RootLayout({
   children,
@@ -15,12 +13,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AuthProvider>
-          {/* The main content for each page */}
-          <main className="main-content">{children}</main>
-          {/* A consistent footer for all pages */}
-          <Footer />
-        </AuthProvider>
+        <SessionProvider>
+          <AuthProvider>
+            {/* The main content for each page */}
+            <main className="main-content">{children}</main>
+            {/* A consistent footer for all pages */}
+            <Footer />
+          </AuthProvider>
+        </SessionProvider>
       </body>
     </html>
   );
