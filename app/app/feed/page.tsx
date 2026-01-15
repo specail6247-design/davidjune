@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { FeedCard, FeedCardData } from '../components/FeedCard';
-import { firestore } from '../../lib/firebase';
+import { FeedCard, FeedCardData } from '../../components/FeedCard';
+import { firestore } from '../../../lib/firebase';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 
 const FeedPage = () => {

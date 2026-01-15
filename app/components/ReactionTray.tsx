@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { firestore } from '../../../lib/firebase';
+import { firestore } from '../../lib/firebase';
 import {
   collection,
   onSnapshot,
@@ -12,7 +12,7 @@ import {
   doc,
   writeBatch,
 } from 'firebase/firestore';
-import { useAuth } from '../../../lib/AuthContext'; // Assuming you have AuthContext
+import { useAuth } from '../../lib/AuthContext'; // Assuming you have AuthContext
 
 const defaultReactions = ['😍', '😂', '😮', '😢', '😡', '🫶'];
 
