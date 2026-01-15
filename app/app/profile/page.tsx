@@ -122,11 +122,11 @@ const ProfilePage = () => {
       const recent = await listRecentUserMissions(userId);
       const completed = recent.filter((mission) => mission.status === 'completed').length;
       if (completed >= 5) {
-        setExplorerLabel('🔥 Active');
+        setExplorerLabel('🔥');
       } else if (completed >= 3) {
-        setExplorerLabel('🧭 Signal');
+        setExplorerLabel('🧭');
       } else {
-        setExplorerLabel('✨ Flow');
+        setExplorerLabel('✨');
       }
     };
     load().catch(() => {});
@@ -223,19 +223,19 @@ const ProfilePage = () => {
             <textarea
               value={bio}
               onChange={(e) => setBio(e.target.value)}
-              placeholder="Tell us about yourself..."
+              placeholder="✏️..."
               maxLength={150}
             />
             <div className="bio-actions">
-                <span className="char-count">{bio.length} / 150</span>
-                <button onClick={handleBioSave} className="save-btn">Save</button>
-                <button onClick={() => setIsEditingBio(false)} className="cancel-btn">Cancel</button>
+                <span className="char-count">📊 {bio.length} / 150</span>
+                <button onClick={handleBioSave} className="save-btn">✅</button>
+                <button onClick={() => setIsEditingBio(false)} className="cancel-btn">❌</button>
             </div>
           </div>
         ) : (
           <div className="bio-display">
-            <p>{bio || 'No bio yet. Click edit to add one!'}</p>
-            <button onClick={() => setIsEditingBio(true)} className="edit-btn">Edit Bio</button>
+            <p>{bio || '😶‍🌫️'}</p>
+            <button onClick={() => setIsEditingBio(true)} className="edit-btn">✏️</button>
           </div>
         )}
       </div>
@@ -272,7 +272,7 @@ const ProfilePage = () => {
       </div>
       <div className="panel">
         <div className="panel-row">
-          <span className="pill">{subscription ? subscription.plan.toUpperCase() : 'FREE'}</span>
+          <span className="pill">{subscription ? `🎫 ${subscription.plan.toUpperCase()}` : '🆓'}</span>
           {subscription && (
             <span className={`pill ${counterBounce ? 'bounce' : ''}`}>
               🔓 {revealCount}/{getPlanRevealLimit(subscription.plan)}
@@ -400,7 +400,7 @@ const ProfilePage = () => {
       )}
       <EmojiPickerModal
         isOpen={picker === 'avatar'}
-        emojis={recommendedDefaultAvatars.concat(mobileOptimizedSets.avatarPicker)}
+        emojis={[...(recommendedDefaultAvatars as any), ...(mobileOptimizedSets.avatarPicker as any)]}
         onClose={() => setPicker(null)}
         onSelect={(emoji) => {
           setAvatarEmoji(emoji);
@@ -418,7 +418,7 @@ const ProfilePage = () => {
       />
       <EmojiPickerModal
         isOpen={picker === 'mood'}
-        emojis={mobileOptimizedSets.moodPicker}
+        emojis={[...(mobileOptimizedSets.moodPicker as any)]}
         onClose={() => setPicker(null)}
         onSelect={(emoji) => {
           setMoodEmoji(emoji);

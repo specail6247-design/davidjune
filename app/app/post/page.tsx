@@ -71,7 +71,7 @@ const PostPage = () => {
       )}
       <EmojiPickerModal
         isOpen={picker === 'room'}
-        emojis={emojiDataset.rooms}
+        emojis={[...(emojiDataset.rooms as any)]}
         onClose={() => setPicker(null)}
         onSelect={(emoji) => {
           setRoomEmoji(emoji);
@@ -80,7 +80,7 @@ const PostPage = () => {
       />
       <EmojiPickerModal
         isOpen={picker === 'mood'}
-        emojis={mobileOptimizedSets.moodPicker}
+        emojis={[...(mobileOptimizedSets.moodPicker as any)]}
         onClose={() => setPicker(null)}
         onSelect={(emoji) => {
           setMoodEmoji(emoji);
@@ -89,7 +89,7 @@ const PostPage = () => {
       />
       <EmojiPickerModal
         isOpen={picker === 'caption'}
-        emojis={emojiDataset.emotionalSymbols.concat(emojiDataset.energySymbols)}
+        emojis={[...(emojiDataset.emotionalSymbols as any), ...(emojiDataset.energySymbols as any)]}
         onClose={() => setPicker(null)}
         onSelect={(emoji) => {
           setCaptionEmoji(emoji);

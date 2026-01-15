@@ -10,6 +10,7 @@ import {
 } from '../lib/emojiDataset';
 import { emojiMenus } from '../lib/emojiMenus';
 import { MissionBanner } from './components/MissionBanner';
+import { SideBanner } from './components/SideBanner';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 
@@ -29,15 +30,17 @@ const HomePage = () => {
           console.log('Notification permission granted.');
 
           // Get the FCM token
-          const token = await getToken(messaging, {
-            vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY, // Your VAPID key
-          });
+          if (messaging) {
+            const token = await getToken(messaging, {
+              vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY, // Your VAPID key
+            });
 
-          if (token) {
-            console.log('FCM Token:', token);
-            // You can now send this token to your server to send notifications
-          } else {
-            console.log('No registration token available. Request permission to generate one.');
+            if (token) {
+              console.log('FCM Token:', token);
+              // You can now send this token to your server to send notifications
+            } else {
+              console.log('No registration token available. Request permission to generate one.');
+            }
           }
         } else {
           console.log('Unable to get permission to notify.');
@@ -59,9 +62,12 @@ const HomePage = () => {
 
   return (
     <div className="page">
+      <SideBanner />
+      <div className="bg-noise" />
       <div className="bg-orb orb-1" />
       <div className="bg-orb orb-2" />
       <div className="bg-orb orb-3" />
+      <div className="bg-orb orb-4" />
 
       <header className="topbar">
         <div className="logo" aria-label="🪩🌍">
@@ -116,7 +122,7 @@ const HomePage = () => {
                 </span>
               </div>
               <div className="swatches">
-                {emojiDataset.energySymbols.concat(emojiDataset.emotionalSymbols).slice(0, 6).map((emoji) => (
+                {[...(emojiDataset.energySymbols as any), ...(emojiDataset.emotionalSymbols as any)].slice(0, 6).map((emoji) => (
                   <div key={emoji} className="swatch">
                     {emoji}
                   </div>
@@ -482,6 +488,28 @@ const HomePage = () => {
           background: radial-gradient(circle at 15% 20%, #fff6d5 0%, #ffe8f2 35%, #f2f4ff 60%, #f8fffd 100%);
           min-height: 100vh;
           overflow-x: hidden;
+          transition: background-color 0.5s ease;
+        }
+
+        :global(.dark) body {
+          background: radial-gradient(circle at 15% 20%, #1a1a2e 0%, #16213e 35%, #0f3460 60%, #1a1a2e 100%);
+          color: #eee;
+        }
+
+        .bg-noise {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          opacity: 0.03;
+          z-index: 1;
+          pointer-events: none;
+          background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+        }
+
+        :global(.dark) .bg-noise {
+          opacity: 0.05;
         }
 
         .page {
@@ -516,13 +544,18 @@ const HomePage = () => {
           animation-delay: -3s;
         }
 
-        .orb-3 {
-          width: 280px;
-          height: 280px;
-          background: radial-gradient(circle at 30% 30%, var(--lime), transparent 60%);
-          top: 40vh;
-          right: -60px;
-          animation-delay: -6s;
+        .orb-4 {
+          width: 350px;
+          height: 350px;
+          background: radial-gradient(circle at 30% 30%, var(--violet), transparent 60%);
+          bottom: 20vh;
+          right: 20vw;
+          animation-delay: -4.5s;
+        }
+
+        @keyframes float {
+          0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+          50% { transform: translateY(-30px) scale(1.05) rotate(5deg); }
         }
 
         .topbar {

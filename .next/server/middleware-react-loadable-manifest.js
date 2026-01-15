@@ -1,1 +1,0 @@
-self.__REACT_LOADABLE_MANIFEST="{\"app/app/profile/page.tsx -> ../../../lib/monetizationClient\":{\"id\":\"app/app/profile/page.tsx -> ../../../lib/monetizationClient\",\"files\":[]}}"

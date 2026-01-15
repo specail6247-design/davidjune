@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
-import { STRIPE_PUBLIC_KEY, PLAN_CONFIG, GIFT_TIERS } from '../lib/monetizationConfig';
+import { STRIPE_PUBLIC_KEY, PLAN_CONFIG, GIFT_TIERS } from '../../lib/monetizationConfig';
 
 const stripePromise = loadStripe(STRIPE_PUBLIC_KEY);
 
