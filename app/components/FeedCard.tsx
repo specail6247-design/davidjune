@@ -1,6 +1,7 @@
-'use client';
-
+import { useState } from 'react';
 import { ReactionTray } from './ReactionTray';
+import { CommentDrawer } from './CommentDrawer';
+import { useAuth } from '../../lib/AuthContext';
 
 export type FeedCardData = {
   id: string;
@@ -12,6 +13,9 @@ export type FeedCardData = {
 };
 
 export const FeedCard = ({ data }: { data: FeedCardData }) => {
+  const { user } = useAuth();
+  const [isCommentsOpen, setIsCommentsOpen] = useState(false);
+
   const timeAgo = (timestamp: any) => {
     if (!timestamp) return 'just now';
     const now = Date.now();
@@ -49,7 +53,17 @@ export const FeedCard = ({ data }: { data: FeedCardData }) => {
 
       <div className="card-footer">
         <ReactionTray postId={data.id} />
+        <button className="comment-trigger" onClick={() => setIsCommentsOpen(true)}>
+          💬✨
+        </button>
       </div>
+
+      <CommentDrawer 
+        postId={data.id} 
+        userId={user?.uid || 'anonymous'} 
+        isOpen={isCommentsOpen} 
+        onClose={() => setIsCommentsOpen(false)} 
+      />
 
       <style jsx>{`
         .feed-card {
@@ -59,6 +73,7 @@ export const FeedCard = ({ data }: { data: FeedCardData }) => {
           padding: 16px;
           display: grid;
           gap: 12px;
+          position: relative;
         }
         .card-header {
           display: flex;
@@ -100,6 +115,21 @@ export const FeedCard = ({ data }: { data: FeedCardData }) => {
         }
         .card-footer {
           margin-top: 8px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .comment-trigger {
+          background: #f8f9fa;
+          border: none;
+          padding: 8px 12px;
+          border-radius: 999px;
+          font-size: 14px;
+          cursor: pointer;
+          transition: background 0.2s;
+        }
+        .comment-trigger:hover {
+          background: #eee;
         }
       `}</style>
     </div>

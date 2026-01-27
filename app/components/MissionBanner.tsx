@@ -45,16 +45,30 @@ export const MissionBanner = () => {
 
   useEffect(() => {
     const init = async () => {
-      if (process.env.NEXT_PUBLIC_DEV_MODE === 'true' || process.env.NODE_ENV === 'development') {
-        await seedDevMissions();
+      const timeout = (ms: number) => new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms));
+      try {
+        if (process.env.NEXT_PUBLIC_DEV_MODE === 'true' || process.env.NODE_ENV === 'development') {
+          seedDevMissions().catch(() => {});
+        }
+        const data = await Promise.race([
+          getUserMissionWithDefinition(userId),
+          timeout(5000)
+        ]) as MissionWithUser;
+        setMissionData(data);
+        const stamps = await getWeeklyStampCount(userId);
+        setWeeklyStamps(stamps);
+      } catch (err) {
+        console.error('MissionBanner: Init failed or timed out', err);
+        setMissionData({
+          mission: { id: 'default', mission_emoji: '✨', banner_emoji: '✨🙌', type: 'checkin', active: true },
+          userMission: { user_id: userId, mission_id: 'default', assigned_date: 'today', completed: false, media_url: null },
+          userMissionId: 'temp-id'
+        });
       }
-      const data = await getUserMissionWithDefinition(userId);
-      setMissionData(data);
-      const stamps = await getWeeklyStampCount(userId);
-      setWeeklyStamps(stamps);
     };
 
-    init().catch(() => {
+    init().catch((err) => {
+      console.error('MissionBanner: Initialization failed:', err);
       setMissionData(null);
     });
   }, [userId]);
