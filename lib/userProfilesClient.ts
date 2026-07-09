@@ -1,12 +1,13 @@
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { firestore } from './firebase';
 import { isEmojiOnly } from './emojiValidation';
+import { recommendedDefaultAvatars } from './emojiDataset';
 
 export type UserProfile = {
   userId: string;
   avatarEmoji: string;
   countryEmoji: string;
-  bio?: string; // Add bio field
+  bio?: string;
   visualIntensity?: 'S' | 'M' | 'L';
   createdAt?: unknown;
   updatedAt?: unknown;
@@ -35,4 +36,25 @@ export const upsertUserProfile = async (profile: Partial<UserProfile> & { userId
     { ...profile, updatedAt: serverTimestamp() },
     { merge: true },
   );
+};
+
+/** Creates a profile with a random default avatar on first sign-in. */
+export const ensureUserProfile = async (userId: string): Promise<UserProfile> => {
+  const existing = await getUserProfile(userId);
+  if (existing) {
+    return existing;
+  }
+  const avatarEmoji =
+    recommendedDefaultAvatars[Math.floor(Math.random() * recommendedDefaultAvatars.length)];
+  const fresh: UserProfile = {
+    userId,
+    avatarEmoji,
+    countryEmoji: '🌍',
+  };
+  await setDoc(doc(firestore, PROFILES_COLLECTION, userId), {
+    ...fresh,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+  return fresh;
 };

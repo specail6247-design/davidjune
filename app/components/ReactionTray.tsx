@@ -1,99 +1,72 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { firestore } from '../../lib/firebase';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '../../lib/AuthContext';
 import {
-  collection,
-  onSnapshot,
-  addDoc,
-  query,
-  where,
-  deleteDoc,
-  doc,
-  writeBatch,
-} from 'firebase/firestore';
-import { useAuth } from '../../lib/AuthContext'; // Assuming you have AuthContext
+  REACTION_EMOJIS,
+  Reaction,
+  setReaction,
+  subscribeToReactions,
+} from '../../lib/postsClient';
 
-const defaultReactions = ['😍', '😂', '😮', '😢', '😡', '🫶'];
-
-type ReactionCounts = {
-  [key: string]: number;
-};
-
-type UserReaction = {
-  [key: string]: string | null;
-};
-
-export const ReactionTray = ({ postId }: { postId: string }) => {
+export const ReactionTray = ({
+  postId,
+  onCountChange,
+}: {
+  postId: string;
+  onCountChange?: (count: number) => void;
+}) => {
   const { user } = useAuth();
-  const [reactionCounts, setReactionCounts] = useState<ReactionCounts>({});
-  const [userReactions, setUserReactions] = useState<UserReaction>({});
-  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+  const [reactions, setReactions] = useState<Reaction[]>([]);
+  const [pending, setPending] = useState(false);
 
   useEffect(() => {
     if (!postId) return;
-
-    const q = query(collection(firestore, 'reactions'), where('postId', '==', postId));
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const counts: ReactionCounts = {};
-      const userSpecificReactions: UserReaction = {};
-
-      snapshot.docs.forEach((doc) => {
-        const { emoji, uid } = doc.data();
-        counts[emoji] = (counts[emoji] || 0) + 1;
-        if (user && uid === user.uid) {
-          userSpecificReactions[emoji] = doc.id;
-        }
-      });
-
-      setReactionCounts(counts);
-      setUserReactions(userSpecificReactions);
-      setIsLoading(false);
+    const unsubscribe = subscribeToReactions(postId, (data) => {
+      setReactions(data);
+      onCountChange?.(data.length);
     });
-
     return () => unsubscribe();
-  }, [postId, user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [postId]);
+
+  const myReaction = user ? reactions.find((r) => r.uid === user.uid)?.emoji ?? null : null;
+
+  const counts: Record<string, number> = {};
+  reactions.forEach((r) => {
+    counts[r.emoji] = (counts[r.emoji] || 0) + 1;
+  });
 
   const handleReaction = async (emoji: string) => {
     if (!user) {
-      alert('Please log in to react.');
+      router.push('/login');
       return;
     }
-
-    setIsLoading(true);
-    const existingReactionDocId = userReactions[emoji];
-
+    if (pending) return;
+    setPending(true);
     try {
-      if (existingReactionDocId) {
-        // User is removing their reaction
-        await deleteDoc(doc(firestore, 'reactions', existingReactionDocId));
-      } else {
-        // User is adding a new reaction
-        await addDoc(collection(firestore, 'reactions'), {
-          postId,
-          emoji,
-          uid: user.uid,
-        });
-      }
+      await setReaction(postId, user.uid, myReaction === emoji ? null : emoji);
     } catch (error) {
-      console.error('Error updating reaction:', error);
+      console.error('Reaction failed:', error);
+    } finally {
+      setPending(false);
     }
   };
 
   return (
     <div className="reaction-tray-wrap">
-      {defaultReactions.map((emoji) => {
-        const count = reactionCounts[emoji] || 0;
-        const hasReacted = userReactions[emoji];
-
+      {REACTION_EMOJIS.map((emoji) => {
+        const count = counts[emoji] || 0;
+        const selected = myReaction === emoji;
         return (
           <button
             key={emoji}
-            className={`reaction-chip ${hasReacted ? 'selected' : ''} ${count > 0 ? 'has-count' : ''}`}
+            className={`reaction-chip ${selected ? 'selected' : ''}`}
             onClick={() => handleReaction(emoji)}
-            disabled={isLoading}
-            aria-label={`React with ${emoji}`}>
+            aria-label={`React ${emoji}`}
+          >
             <span className="reaction-emoji">{emoji}</span>
             {count > 0 && <span className="reaction-count">{count}</span>}
           </button>
@@ -102,44 +75,38 @@ export const ReactionTray = ({ postId }: { postId: string }) => {
       <style jsx>{`
         .reaction-tray-wrap {
           display: flex;
-          gap: 8px;
+          gap: 6px;
           align-items: center;
-          padding: 8px;
-          background-color: rgba(255, 255, 255, 0.7);
-          border-radius: 999px;
-          backdrop-filter: blur(10px);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          flex-wrap: wrap;
         }
         .reaction-chip {
           display: inline-flex;
           align-items: center;
-          gap: 6px;
-          padding: 6px 12px;
+          gap: 5px;
+          padding: 6px 10px;
           border-radius: 999px;
           border: none;
           background-color: #f0f0f5;
           cursor: pointer;
           font-size: 14px;
-          transition: all 0.2s ease;
+          transition: all 0.15s ease;
         }
         .reaction-chip:hover {
-          transform: translateY(-2px);
-          background-color: #e0e0e5;
+          transform: translateY(-2px) scale(1.05);
+          background-color: #e6e6ef;
         }
         .reaction-chip.selected {
-          background-color: var(--lime);
-          box-shadow: 0 0 0 3px rgba(209, 255, 79, 0.4);
+          background: linear-gradient(135deg, #ffe3f6, #e6e2ff);
+          box-shadow: 0 0 0 2px rgba(107, 91, 255, 0.35);
         }
         .reaction-emoji {
-          font-size: 18px;
+          font-size: 17px;
           line-height: 1;
         }
         .reaction-count {
-          font-weight: 600;
-          font-size: 13px;
-        }
-        .reaction-chip.has-count:not(.selected) {
-          background-color: #e8e8ee;
+          font-weight: 700;
+          font-size: 12px;
+          color: #444;
         }
       `}</style>
     </div>

@@ -2,17 +2,20 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { subscribeToComments, addEmojiComment, Comment } from '../../lib/commentsClient';
 import { mobileOptimizedSets } from '../../lib/emojiDataset';
+import { useAuth } from '../../lib/AuthContext';
 
 type CommentDrawerProps = {
   postId: string;
-  userId: string;
   isOpen: boolean;
   onClose: () => void;
 };
 
-export const CommentDrawer = ({ postId, userId, isOpen, onClose }: CommentDrawerProps) => {
+export const CommentDrawer = ({ postId, isOpen, onClose }: CommentDrawerProps) => {
+  const { user } = useAuth();
+  const router = useRouter();
   const [comments, setComments] = useState<Comment[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -26,9 +29,13 @@ export const CommentDrawer = ({ postId, userId, isOpen, onClose }: CommentDrawer
 
   const handleAddComment = async (emoji: string) => {
     if (isSubmitting) return;
+    if (!user) {
+      router.push('/login');
+      return;
+    }
     setIsSubmitting(true);
     try {
-      await addEmojiComment(postId, userId, emoji);
+      await addEmojiComment(postId, user.uid, emoji);
     } catch (err) {
       console.error(err);
     } finally {
@@ -60,7 +67,7 @@ export const CommentDrawer = ({ postId, userId, isOpen, onClose }: CommentDrawer
         </div>
 
         <div className="comment-input-area">
-          <p className="input-title">Add your vibe:</p>
+          <p className="input-title">👇 이모지로 답하기 · Reply with emoji</p>
           <div className="emoji-picker-row">
             {mobileOptimizedSets.moodPicker.slice(0, 8).map((emoji) => (
               <button 

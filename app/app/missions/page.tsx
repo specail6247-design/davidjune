@@ -18,6 +18,7 @@ import {
 } from '../../../lib/missionsV2Client';
 import { AUTO_POST_ON_MISSION, DEV_MODE } from '../../../lib/appConfig';
 import { createPost } from '../../../lib/postsClient';
+import { getUserProfile } from '../../../lib/userProfilesClient';
 import type { MissionWithUser, UserMission } from '../../../lib/missionsV2Types';
 import { getDailyLeaderboard, getWeeklyLeaderboard, scoreToStars } from '../../../lib/leaderboardClient';
 import { getSubscription } from '../../../lib/monetizationClient';
@@ -115,12 +116,14 @@ const MissionsPage = () => {
 
   const handlePostNow = async () => {
     if (!pendingPost) return;
+    const profile = await getUserProfile(userId).catch(() => null);
     await createPost({
       userId,
-      roomEmoji: pendingPost.mission.mission.roomEmoji,
+      authorEmoji: profile?.avatarEmoji ?? '🙂',
+      countryEmoji: profile?.countryEmoji ?? '🌍',
       moodEmoji: '🙂',
-      captionEmoji: `${pendingPost.mission.mission.missionEmoji}✨`,
-      mediaUrl: pendingPost.mediaUrl ?? null,
+      caption: `${pendingPost.mission.mission.missionEmoji}✨`,
+      imageUrl: pendingPost.mediaUrl ?? null,
       visibility: 'public',
     });
     const { markMissionAutoPosted } = await import('../../../lib/missionsV2Client');

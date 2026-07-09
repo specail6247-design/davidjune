@@ -1,10 +1,55 @@
-'use client';
-
-import { SessionProvider } from 'next-auth/react';
-import { AuthProvider } from '../lib/AuthContext';
-import { ThemeProvider } from './components/ThemeProvider';
-import { Footer } from './components/Footer';
+import type { Metadata, Viewport } from 'next';
+import { Providers } from './components/Providers';
 import './globals.css';
+
+const SITE_URL = 'https://emojiworld-195a0.web.app';
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'EmojiWorld — No Words. Just Emoji. 🌍✨',
+    template: '%s | EmojiWorld',
+  },
+  description:
+    'The social network where the whole world speaks one language: emoji. Post feelings, react with hearts, and unlock photo posts by earning likes. 언어의 장벽 없이 이모지로만 소통하는 글로벌 SNS.',
+  keywords: [
+    'emoji',
+    'social network',
+    'emoji only',
+    'no language barrier',
+    'EmojiWorld',
+    '이모지',
+    '소셜 네트워크',
+    'SNS',
+  ],
+  openGraph: {
+    type: 'website',
+    url: SITE_URL,
+    siteName: 'EmojiWorld',
+    title: 'EmojiWorld — No Words. Just Emoji. 🌍✨',
+    description:
+      'One planet, one language: emoji. Earn likes to unlock photo posting. Join the emoji-first social network.',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'EmojiWorld' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'EmojiWorld — No Words. Just Emoji. 🌍✨',
+    description: 'One planet, one language: emoji. Earn likes to unlock photo posting.',
+    images: ['/og-image.png'],
+  },
+  icons: {
+    icon: '/icon.png',
+    apple: '/icon.png',
+  },
+  manifest: '/manifest.json',
+  robots: { index: true, follow: true },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#6b5bff',
+  width: 'device-width',
+  initialScale: 1,
+};
 
 export default function RootLayout({
   children,
@@ -13,20 +58,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="icon" href="/icon.png" />
-      </head>
       <body suppressHydrationWarning>
-        <SessionProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <AuthProvider>
-              {/* The main content for each page */}
-              <main className="main-content">{children}</main>
-              {/* A consistent footer for all pages */}
-              <Footer />
-            </AuthProvider>
-          </ThemeProvider>
-        </SessionProvider>
+        <Providers>
+          <main className="main-content">{children}</main>
+        </Providers>
       </body>
     </html>
   );

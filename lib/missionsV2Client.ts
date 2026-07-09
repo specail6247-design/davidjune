@@ -11,11 +11,12 @@ import {
   updateDoc,
   where,
 } from 'firebase/firestore';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { firestore, storage } from './firebase';
+import { firestore } from './firebase';
 import { isEmojiOnly } from './emojiValidation';
 import { AUTO_POST_ON_MISSION } from './appConfig';
 import { createPost } from './postsClient';
+import { getUserProfile } from './userProfilesClient';
+import { compressImageToDataUrl } from './imageCompress';
 import type { MissionDefinition, MissionStatus, MissionWithUser, UserMission } from './missionsV2Types';
 
 const MISSIONS_COLLECTION = 'missions';
@@ -146,12 +147,14 @@ const createAutoPost = async ({
   mission: MissionDefinition;
   mediaUrl?: string | null;
 }) => {
+  const profile = await getUserProfile(userId).catch(() => null);
   await createPost({
     userId,
-    roomEmoji: mission.roomEmoji,
+    authorEmoji: profile?.avatarEmoji ?? '🙂',
+    countryEmoji: profile?.countryEmoji ?? '🌍',
     moodEmoji: getLastMoodEmoji(),
-    captionEmoji: `${mission.missionEmoji}✨`,
-    mediaUrl: mediaUrl ?? null,
+    caption: `${mission.missionEmoji}✨`,
+    imageUrl: mediaUrl ?? null,
     visibility: 'public',
   });
 };
@@ -192,10 +195,8 @@ export const completeMissionWithPhoto = async ({
   file: File;
   shouldAutoPost?: boolean;
 }) => {
-  const timestamp = Date.now();
-  const storageRef = ref(storage, `missions/${userId}/${mission.id}/${timestamp}.jpg`);
-  await uploadBytes(storageRef, file);
-  const mediaUrl = await getDownloadURL(storageRef);
+  // Storage 없이 압축된 data URL로 저장 (무료 플랜 호환)
+  const mediaUrl = await compressImageToDataUrl(file);
   const autoPost = shouldAutoPost ?? AUTO_POST_ON_MISSION;
   const refDoc = doc(firestore, USER_MISSIONS_COLLECTION, userMissionId);
   await updateDoc(refDoc, {

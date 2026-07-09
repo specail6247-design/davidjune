@@ -2,106 +2,160 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /fcm_tokens/{token} {
-      allow read, write: if true;
+
+    function signedIn() {
+      return request.auth != null;
     }
 
+    function isOwner(userIdField) {
+      return signedIn() && request.auth.uid == userIdField;
+    }
+
+    // ---- 게시물 ----
+    match /posts/{postId} {
+      allow read: if true;
+      allow create: if isOwner(request.resource.data.userId)
+        && request.resource.data.caption is string
+        && request.resource.data.caption.size() > 0
+        && request.resource.data.caption.size() < 256
+        && (!('imageUrl' in request.resource.data)
+            || request.resource.data.imageUrl == null
+            || (request.resource.data.imageUrl is string
+                && request.resource.data.imageUrl.size() < 800000));
+      allow update, delete: if isOwner(resource.data.userId);
+
+      // 반응: 유저당 1개 (docId == uid)
+      match /reactions/{reactorId} {
+        allow read: if true;
+        allow create, update: if signedIn()
+          && request.auth.uid == reactorId
+          && request.resource.data.emoji is string
+          && request.resource.data.emoji.size() < 32;
+        allow delete: if signedIn() && request.auth.uid == reactorId;
+      }
+
+      // 댓글: 이모지 전용 (길이 제한으로 텍스트 남용 억제)
+      match /comments/{commentId} {
+        allow read: if true;
+        allow create: if isOwner(request.resource.data.user_id)
+          && request.resource.data.emoji_comment is string
+          && request.resource.data.emoji_comment.size() < 64;
+        allow delete: if isOwner(resource.data.user_id);
+      }
+    }
+
+    // ---- 프로필 (docId == uid) ----
+    match /userProfiles/{userId} {
+      allow read: if true;
+      allow write: if signedIn() && request.auth.uid == userId;
+    }
+
+    // ---- 미션 ----
     match /missions/{missionId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if false;
     }
 
     match /user_missions/{docId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow create: if signedIn();
+      allow update, delete: if false;
     }
 
     match /userMissions/{docId} {
-      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      allow read: if isOwner(resource.data.userId);
+      allow create: if isOwner(request.resource.data.userId);
+      allow update: if isOwner(resource.data.userId);
+      allow delete: if false;
     }
 
-    match /posts/{docId} {
-      allow read: if true;
-      allow write: if request.auth != null && request.auth.uid == request.resource.data.userId;
-    }
-
-    match /userProfiles/{docId} {
-      allow read: if true;
-      allow write: if request.auth != null && request.auth.uid == request.resource.data.userId;
-    }
-
+    // ---- 리더보드 (서버 전용 쓰기) ----
     match /leaderboardDaily/{docId} {
       allow read: if true;
       allow write: if false;
-    }
 
-    match /leaderboardDaily/{docId}/entries/{entryId} {
-      allow read: if true;
-      allow write: if false;
+      match /entries/{entryId} {
+        allow read: if true;
+        allow write: if false;
+      }
     }
 
     match /leaderboardWeekly/{docId} {
       allow read: if true;
       allow write: if false;
+
+      match /entries/{entryId} {
+        allow read: if true;
+        allow write: if false;
+      }
     }
 
-    match /leaderboardWeekly/{docId}/entries/{entryId} {
-      allow read: if true;
-      allow write: if false;
-    }
-
+    // ---- 수익화 ----
     match /subscriptions/{docId} {
-      allow read: if request.auth != null && request.auth.uid == docId;
+      allow read: if signedIn() && request.auth.uid == docId;
       allow write: if false;
     }
 
     match /info_reveals/{docId} {
-      allow read: if request.auth != null && request.auth.uid == resource.data.viewerId;
+      allow read: if isOwner(resource.data.viewerId);
       allow write: if false;
     }
 
     match /user_gifts/{docId} {
-      allow read: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow read: if isOwner(resource.data.userId);
       allow write: if false;
     }
 
     match /gift_rate/{docId} {
-      allow read: if false;
-      allow write: if false;
+      allow read, write: if false;
     }
 
     match /reveal_rate/{docId} {
-      allow read: if false;
-      allow write: if false;
+      allow read, write: if false;
     }
 
+    // ---- 리워드/스탬프 (본인 것만) ----
     match /user_stamps/{docId} {
-      allow read, write: if true;
+      allow read: if isOwner(resource.data.user_id);
+      allow create: if isOwner(request.resource.data.user_id);
+      allow update, delete: if false;
     }
 
     match /slot_ledger/{docId} {
-      allow read, write: if true;
+      allow read: if isOwner(resource.data.user_id);
+      allow create: if isOwner(request.resource.data.user_id);
+      allow update, delete: if false;
     }
 
     match /user_notifications/{docId} {
-      allow read, write: if true;
+      allow read: if isOwner(resource.data.user_id);
+      allow create: if isOwner(request.resource.data.user_id);
+      allow update, delete: if false;
     }
 
+    // ---- FCM 토큰 ----
+    match /fcm_tokens/{token} {
+      allow read: if false;
+      allow create, update: if signedIn();
+      allow delete: if false;
+    }
+
+    // ---- 관리자 (콘솔 전용) ----
     match /admin_settings/{docId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if false;
     }
 
     match /admin_users/{docId} {
-      allow read, write: if true;
+      allow read, write: if false;
     }
 
     match /mission_rejections/{docId} {
-      allow read: if false;
-      allow write: if false;
+      allow read, write: if false;
     }
 
     match /post_rejections/{docId} {
-      allow read: if false;
-      allow write: if false;
+      allow read, write: if false;
     }
   }
 }

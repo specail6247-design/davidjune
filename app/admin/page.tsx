@@ -1,49 +1,89 @@
+'use client';
 
-import { promises as fs } from 'fs';
-import path from 'path';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { collection, getCountFromServer } from 'firebase/firestore';
+import { firestore } from '../../lib/firebase';
 
-async function getStats() {
-  const usersDir = path.join(process.cwd(), 'app', '(users)');
-  const postsDir = path.join(process.cwd(), 'app', '(posts)');
+export default function AdminDashboard() {
+  const [stats, setStats] = useState<{ posts: number; users: number } | null>(null);
 
-  try {
-    const userFiles = await fs.readdir(usersDir);
-    const postFiles = await fs.readdir(postsDir);
-
-    const totalUsers = userFiles.filter(file => file.endsWith('.tsx')).length;
-    const totalPosts = postFiles.filter(file => file.endsWith('.tsx')).length;
-
-    return { totalUsers, totalPosts };
-  } catch (error) {
-    console.error("Error reading directories:", error);
-    return { totalUsers: 0, totalPosts: 0 };
-  }
-}
-
-export default async function AdminDashboard() {
-  const { totalUsers, totalPosts } = await getStats();
+  useEffect(() => {
+    const load = async () => {
+      const [posts, users] = await Promise.all([
+        getCountFromServer(collection(firestore, 'posts')),
+        getCountFromServer(collection(firestore, 'userProfiles')),
+      ]);
+      setStats({ posts: posts.data().count, users: users.data().count });
+    };
+    load().catch(() => setStats({ posts: 0, users: 0 }));
+  }, []);
 
   return (
-    <div>
-      <h2 className="text-3xl font-bold mb-6">Dashboard</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-300">Total Users</h3>
-          <p className="text-4xl font-bold mt-2">{totalUsers}</p>
+    <div className="admin">
+      <header className="admin-header">
+        <h1>📊 Dashboard</h1>
+        <Link href="/app/feed" className="back-link">
+          🏠 앱으로
+        </Link>
+      </header>
+      <div className="stat-grid">
+        <div className="stat-card">
+          <div className="stat-label">👥 Users</div>
+          <div className="stat-value">{stats ? stats.users : '⏳'}</div>
         </div>
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-300">Total Posts</h3>
-          <p className="text-4xl font-bold mt-2">{totalPosts}</p>
-        </div>
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-300">Weekly Active Users</h3>
-          <p className="text-4xl font-bold mt-2">1,234</p>  // Placeholder
-        </div>
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-300">Server Health</h3>
-          <p className="text-4xl font-bold mt-2 text-green-500">Good</p> // Placeholder
+        <div className="stat-card">
+          <div className="stat-label">📝 Posts</div>
+          <div className="stat-value">{stats ? stats.posts : '⏳'}</div>
         </div>
       </div>
+      <style jsx>{`
+        .admin {
+          max-width: 720px;
+          margin: 0 auto;
+          padding: 32px 20px;
+          display: grid;
+          gap: 24px;
+        }
+        .admin-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .admin-header h1 {
+          margin: 0;
+          font-size: 28px;
+        }
+        .admin-header :global(.back-link) {
+          text-decoration: none;
+          background: #f4f4fb;
+          padding: 10px 16px;
+          border-radius: 999px;
+          font-size: 14px;
+          color: #333;
+        }
+        .stat-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 16px;
+        }
+        .stat-card {
+          background: #fff;
+          border-radius: 20px;
+          padding: 24px;
+          box-shadow: 0 10px 26px rgba(0, 0, 0, 0.07);
+        }
+        .stat-label {
+          font-size: 14px;
+          color: #7a7a8c;
+          font-weight: 600;
+        }
+        .stat-value {
+          font-size: 40px;
+          font-weight: 800;
+          margin-top: 8px;
+        }
+      `}</style>
     </div>
   );
 }

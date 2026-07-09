@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../../lib/firebase';
-import { useSearchParams } from 'next/navigation';
 import { emojiDataset, mobileOptimizedSets, recommendedDefaultAvatars } from '../../../lib/emojiDataset';
 import { EmojiPickerModal } from '../../components/EmojiPickerModal';
 import { upsertUserProfile, getUserProfile } from '../../../lib/userProfilesClient';
@@ -58,7 +57,11 @@ const ProfilePage = () => {
   const [explorerLabel, setExplorerLabel] = useState('🌍 Explorer');
   const [giftBurst, setGiftBurst] = useState(false);
   const [giftModal, setGiftModal] = useState<{ tier: string; emoji: string } | null>(null);
-  const searchParams = useSearchParams();
+  const [shareMode, setShareMode] = useState(false);
+
+  useEffect(() => {
+    setShareMode(new URLSearchParams(window.location.search).get('share') === '1');
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -189,7 +192,6 @@ const ProfilePage = () => {
   };
 
   const isElite = subscription?.plan === 'elite' || getQaState().showEliteEffectsPreview;
-  const shareMode = searchParams.get('share') === '1';
 
   return (
     <div className="profile">

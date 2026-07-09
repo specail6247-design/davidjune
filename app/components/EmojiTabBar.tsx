@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const tabs = [
@@ -19,7 +20,7 @@ export const EmojiTabBar = () => {
       {tabs.map((tab) => {
         const active = pathname.startsWith(tab.href);
         return (
-          <a
+          <Link
             key={tab.href}
             href={tab.href}
             className={`tab-item ${active ? 'active' : ''}`}
@@ -28,7 +29,7 @@ export const EmojiTabBar = () => {
             title={tab.label}
           >
             {tab.emoji}
-          </a>
+          </Link>
         );
       })}
       <style jsx>{`
@@ -46,7 +47,7 @@ export const EmojiTabBar = () => {
           backdrop-filter: blur(12px);
           z-index: 10;
         }
-        .tab-item {
+        .tab-bar :global(.tab-item) {
           height: 48px;
           border-radius: 999px;
           display: grid;
@@ -58,16 +59,16 @@ export const EmojiTabBar = () => {
           transition: transform 0.2s ease, box-shadow 0.2s ease;
           position: relative;
         }
-        .tab-item.active {
+        .tab-bar :global(.tab-item.active) {
           background: linear-gradient(135deg, #ff4fd8, #6b5bff);
           color: #fff;
           box-shadow: 0 16px 30px rgba(107, 91, 255, 0.35);
         }
-        .tab-item:hover {
+        .tab-bar :global(.tab-item:hover) {
           transform: translateY(-1px);
           box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
         }
-        .tab-item::after {
+        .tab-bar :global(.tab-item::after) {
           content: attr(data-label);
           position: absolute;
           bottom: 60px;
@@ -83,8 +84,8 @@ export const EmojiTabBar = () => {
           transition: opacity 0.15s ease;
           white-space: nowrap;
         }
-        .tab-item:hover::after,
-        .tab-item:focus-visible::after {
+        .tab-bar :global(.tab-item:hover::after),
+        .tab-bar :global(.tab-item:focus-visible::after) {
           opacity: 1;
         }
       `}</style>

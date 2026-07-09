@@ -1,0 +1,17 @@
+{
+  "name": "EmojiWorld — No Words. Just Emoji.",
+  "short_name": "EmojiWorld",
+  "description": "The social network where the whole world speaks one language: emoji.",
+  "start_url": "/app/feed/",
+  "display": "standalone",
+  "background_color": "#f2f4ff",
+  "theme_color": "#6b5bff",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
