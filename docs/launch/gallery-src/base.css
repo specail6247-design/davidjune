@@ -1,0 +1,19 @@
+* { margin:0; padding:0; box-sizing:border-box; }
+body { width:1270px; height:760px; overflow:hidden; position:relative;
+  font-family:-apple-system, BlinkMacSystemFont, sans-serif; color:#11121a;
+  background: radial-gradient(circle at 18% 8%, #fff1f7 0%, #f2f4ff 55%, #e9fff5 100%); }
+.orb1 { position:absolute; width:560px; height:560px; border-radius:50%;
+  background:radial-gradient(circle, rgba(255,79,216,.30), transparent 70%);
+  top:-200px; right:-140px; filter:blur(46px); }
+.orb2 { position:absolute; width:480px; height:480px; border-radius:50%;
+  background:radial-gradient(circle, rgba(107,91,255,.30), transparent 70%);
+  bottom:-180px; left:-120px; filter:blur(46px); }
+.brand { position:absolute; top:44px; left:60px; font-size:26px; font-weight:800; letter-spacing:-.5px; z-index:5; }
+.kicker { display:inline-block; font-size:19px; font-weight:800; color:#6b5bff;
+  background:rgba(107,91,255,.10); border-radius:999px; padding:9px 22px; margin-bottom:22px; }
+h1 { font-size:74px; line-height:1.04; letter-spacing:-3px; font-weight:800; }
+h1 .grad { background:linear-gradient(135deg,#ff4fd8,#6b5bff);
+  -webkit-background-clip:text; background-clip:text; color:transparent; }
+.sub { margin-top:20px; font-size:26px; color:#55556a; font-weight:600; line-height:1.5; }
+.card { background:#fff; border-radius:26px; box-shadow:0 24px 60px rgba(20,10,60,.14); }
+.z { position:relative; z-index:2; }

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><style>
+body { display:flex; align-items:center; justify-content:space-between; padding:0 100px; }
+.tour { width:400px; padding:28px; text-align:center; display:grid; gap:16px; }
+.flags { display:flex; gap:8px; justify-content:center; }
+.flag { width:48px; height:48px; background:#f4f4fb; border-radius:13px; font-size:24px;
+  display:grid; place-items:center; }
+.flag.on { background:linear-gradient(135deg,#ffe3f6,#e6e2ff); box-shadow:0 0 0 2px rgba(107,91,255,.4); }
+.temoji { font-size:80px; }
+.tt { font-size:28px; font-weight:800; }
+.td { font-size:17px; color:#6b6b7a; line-height:1.55; }
+.dots { display:flex; gap:8px; justify-content:center; }
+.dot { width:10px; height:10px; border-radius:99px; background:#e3e3ee; }
+.dot.on { width:26px; background:linear-gradient(135deg,#ff4fd8,#6b5bff); }
+.next { background:linear-gradient(135deg,#ff4fd8,#6b5bff); color:#fff; border-radius:16px;
+  padding:15px; font-size:18px; font-weight:800; }
+</style></head>
+<body>
+  <div class="orb1"></div><div class="orb2"></div>
+  <div class="brand">🪩🌍 EmojiWorld</div>
+  <div class="z" style="max-width:620px">
+    <div class="kicker">ONBOARDING IN 5 LANGUAGES</div>
+    <h1>Your kid <span class="grad">and</span> your grandma can use it</h1>
+    <div class="sub">A guided emoji tour in 한국어, English, 日本語,<br>中文 &amp; ไทย — auto-detected. Zero learning curve.</div>
+  </div>
+  <div class="card tour z">
+    <div class="flags">
+      <div class="flag on">🇰🇷</div><div class="flag">🇺🇸</div><div class="flag">🇯🇵</div>
+      <div class="flag">🇨🇳</div><div class="flag">🇹🇭</div>
+    </div>
+    <div class="temoji">🌍💬</div>
+    <div class="tt">말 대신 이모지!</div>
+    <div class="td">전 세계 누구와도 언어 걱정 없이 통해요.</div>
+    <div class="dots"><div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    <div class="next">다음 →</div>
+  </div>
+</body></html>
