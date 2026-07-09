@@ -1,6 +1,6 @@
 {
-  "name": "EmojiWorld — No Words. Just Emoji.",
-  "short_name": "EmojiWorld",
+  "name": "Picto — No Words. Just Emoji.",
+  "short_name": "Picto",
   "description": "The social network where the whole world speaks one language: emoji.",
   "start_url": "/app/feed/",
   "display": "standalone",

@@ -21,7 +21,7 @@ export const Footer = () => {
           </Link>
         </div>
         <div className="footer-copyright">
-          © {new Date().getFullYear()} EmojiWorld. All rights reserved.
+          © {new Date().getFullYear()} Picto. All rights reserved.
         </div>
       </div>
       <style jsx>{`

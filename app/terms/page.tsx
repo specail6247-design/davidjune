@@ -13,7 +13,7 @@ const TermsPage = () => {
       </header>
       <section className="card">
         <h2>서비스 개요</h2>
-        <p>EmojiWorld는 이모지로만 소통하는 글로벌 소셜 앱입니다.</p>
+        <p>Picto는 이모지로만 소통하는 글로벌 소셜 앱입니다.</p>
       </section>
       <section className="card">
         <h2>계정 및 책임</h2>

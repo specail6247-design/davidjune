@@ -9,19 +9,19 @@ const AboutPage = () => {
         <Link href="/" className="back-link">
           ←
         </Link>
-        <h1>About EmojiWorld</h1>
+        <h1>About Picto</h1>
       </header>
       <main className="content">
         <section>
-          <h2>What is EmojiWorld?</h2>
+          <h2>What is Picto?</h2>
           <p>
-            EmojiWorld is a new social media platform where you can express your daily life and emotions using only emojis. We aim to provide a fun and joyful communication experience by maximizing the intuitive and emotional expression of emojis, moving away from text-oriented communication.
+            Picto is a new social media platform where you can express your daily life and emotions using only emojis. We aim to provide a fun and joyful communication experience by maximizing the intuitive and emotional expression of emojis, moving away from text-oriented communication.
           </p>
         </section>
         <section>
           <h2>Our Vision</h2>
           <p>
-            In a world overflowing with complex text, we dream of a space where you can communicate your feelings more directly and intuitively. EmojiWorld is the beginning of that dream. It's a space to purely share emotions, laugh, and empathize with just one emoji, without the need for lengthy explanations.
+            In a world overflowing with complex text, we dream of a space where you can communicate your feelings more directly and intuitively. Picto is the beginning of that dream. It's a space to purely share emotions, laugh, and empathize with just one emoji, without the need for lengthy explanations.
           </p>
         </section>
         <section>

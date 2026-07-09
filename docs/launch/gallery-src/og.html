@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1200px; height: 630px; overflow: hidden;
+    font-family: -apple-system, 'Space Grotesk', sans-serif;
+    background: radial-gradient(circle at 20% 10%, #fff1f7 0%, #f2f4ff 55%, #e8fff6 100%);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 90px; position: relative;
+  }
+  .orb1 { position: absolute; width: 500px; height: 500px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,79,216,.35), transparent 70%);
+    top: -180px; right: -120px; filter: blur(40px); }
+  .orb2 { position: absolute; width: 420px; height: 420px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(107,91,255,.35), transparent 70%);
+    bottom: -160px; left: -100px; filter: blur(40px); }
+  .left { position: relative; z-index: 2; }
+  .logo { font-size: 44px; font-weight: 800; letter-spacing: -1px; margin-bottom: 28px; }
+  h1 { font-size: 92px; line-height: 1.02; letter-spacing: -4px; font-weight: 800; color: #11121a; }
+  h1 .grad {
+    background: linear-gradient(135deg, #ff4fd8, #6b5bff);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    display: block;
+  }
+  .sub { margin-top: 26px; font-size: 30px; color: #55556a; font-weight: 600; }
+  .pill { display: inline-block; margin-top: 30px; font-size: 26px; font-weight: 800;
+    background: linear-gradient(135deg, #fff7d6, #ffeff9); border-radius: 999px;
+    padding: 14px 30px; box-shadow: 0 10px 26px rgba(0,0,0,.08); }
+  .phone { position: relative; z-index: 2; width: 330px; background: #fff; border-radius: 44px;
+    padding: 24px 20px; box-shadow: 0 40px 90px rgba(20,10,60,.22), inset 0 0 0 9px #11121a;
+    display: grid; gap: 13px; }
+  .notch { width: 100px; height: 9px; background: #11121a; border-radius: 99px; margin: 4px auto 0; }
+  .ph { text-align: center; font-size: 26px; }
+  .card { background: #f8f8fd; border-radius: 18px; padding: 14px 16px; }
+  .top { display: flex; justify-content: space-between; font-size: 20px; margin-bottom: 6px; }
+  .cap { font-size: 30px; letter-spacing: 3px; }
+  .rx { font-size: 13px; color: #8a8a9a; margin-top: 6px; }
+  .unlock { text-align: center; background: linear-gradient(135deg, #fff7d6, #ffeff9);
+    border-radius: 999px; padding: 10px; font-weight: 800; font-size: 18px; }
+</style>
+</head>
+<body>
+  <div class="orb1"></div><div class="orb2"></div>
+  <div class="left">
+    <div class="logo">🪩🌍 Picto</div>
+    <h1>No Words.<span class="grad">Just Emoji.</span></h1>
+    <div class="sub">One planet. One language. Zero barriers.</div>
+    <div class="pill">❤️ ×5 ➡️ 📸 Unlock photos</div>
+  </div>
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="ph">🪩🌍</div>
+    <div class="card"><div class="top"><span>🧑‍🦱 🇧🇷</span><span>😄</span></div><div class="cap">⚽🔥🎉</div><div class="rx">❤️ 12 · 😂 4</div></div>
+    <div class="card"><div class="top"><span>👧 🇰🇷</span><span>😌</span></div><div class="cap">📚😮‍💨☕✨</div><div class="rx">❤️ 8 · 🥺 3</div></div>
+    <div class="unlock">❤️ ×5 ➡️ 📸 1</div>
+  </div>
+</body>
+</html>

@@ -209,7 +209,7 @@ const PostPage = () => {
           </button>
         )}
         <p className="photo-hint">
-          💡 이모지 게시물로 반응(❤️)을 모으면 사진 티켓이 생겨요. 사진은 EmojiWorld의 특권!
+          💡 이모지 게시물로 반응(❤️)을 모으면 사진 티켓이 생겨요. 사진은 Picto의 특권!
         </p>
       </div>
 

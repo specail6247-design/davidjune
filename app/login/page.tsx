@@ -56,7 +56,7 @@ const LoginPage = () => {
         </div>
 
         <div className="emoji-title">🪩🌍</div>
-        <h1 className="brand">EmojiWorld</h1>
+        <h1 className="brand">Picto</h1>
         <p className="welcome-text">
           No words. Just emoji. ✨
           <br />

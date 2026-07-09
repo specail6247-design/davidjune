@@ -18,7 +18,7 @@ export const AppShell = ({ children }: AppShellProps) => {
     <div className="app-shell">
       <WelcomeTour forceOpen={tourOpen || undefined} onClose={() => setTourOpen(false)} />
       <header className="app-topbar">
-        <Link href="/" className="shell-logo" aria-label="EmojiWorld home">
+        <Link href="/" className="shell-logo" aria-label="Picto home">
           🪩🌍
         </Link>
         <div className="topbar-actions">

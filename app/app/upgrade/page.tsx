@@ -88,7 +88,7 @@ const UpgradePage = () => {
       <section className="notice">
         <div className="notice-title">🔒 Important Notice</div>
         <p>
-          EmojiWorld does NOT reveal real personal information. Unlocked details are based ONLY on
+          Picto does NOT reveal real personal information. Unlocked details are based ONLY on
           in-app emoji activity. No real names, emails, phone numbers, or locations are shared.
         </p>
         <div className="notice-bullets">
@@ -138,7 +138,7 @@ const UpgradePage = () => {
       </div>
 
       <footer className="trust">
-        EmojiWorld is an emoji-first social platform. All interactions are symbolic and
+        Picto is an emoji-first social platform. All interactions are symbolic and
         activity-based. No personal data is sold or exposed.
       </footer>
 

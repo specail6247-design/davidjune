@@ -13,7 +13,7 @@ export default function TermsEnPage() {
       </header>
       <section className="card">
         <h2>Service</h2>
-        <p>EmojiWorld is an emoji-first social app.</p>
+        <p>Picto is an emoji-first social app.</p>
       </section>
       <section className="card">
         <h2>Account</h2>

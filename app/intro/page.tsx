@@ -7,7 +7,7 @@ const IntroPage = () => {
     <div className="intro">
       <header className="hero">
         <div className="hero-emoji">🪩🌍</div>
-        <h1>EmojiWorld 사용 방법</h1>
+        <h1>Picto 사용 방법</h1>
         <p>이 앱은 이모지로만 소통합니다. 텍스트는 안내용으로만 보여요.</p>
         <div className="hero-actions">
           <Link className="cta" href="/app/feed">

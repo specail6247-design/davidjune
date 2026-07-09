@@ -15,7 +15,7 @@ export default function AdsenseEnPage() {
       <section className="card notice">
         <h2>Ads Transparency</h2>
         <p>
-          EmojiWorld may display ads to support the service. Ads are shown with clear separation from
+          Picto may display ads to support the service. Ads are shown with clear separation from
           content and do not expose real personal data.
         </p>
       </section>
@@ -42,7 +42,7 @@ export default function AdsenseEnPage() {
       <section className="card">
         <h2>Trust</h2>
         <p>
-          EmojiWorld does not claim identity verification or endorsement. All insights are activity-based
+          Picto does not claim identity verification or endorsement. All insights are activity-based
           and symbolic.
         </p>
       </section>

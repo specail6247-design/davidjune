@@ -1,4 +1,4 @@
-# 🪩🌍 EmojiWorld
+# 🪩🌍 Picto
 
 **No Words. Just Emoji.** — 이모지만으로 전 세계와 소통하는 소셜 네트워크
 

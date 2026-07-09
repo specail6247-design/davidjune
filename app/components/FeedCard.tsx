@@ -17,12 +17,30 @@ const timeAgo = (createdAt: Post['createdAt']) => {
   return `${Math.floor(hours / 24)}d`;
 };
 
+const SITE_URL = 'https://emojiworld-195a0.web.app';
+
 export const FeedCard = ({ post, onDelete }: { post: Post; onDelete?: () => void }) => {
   const { user } = useAuth();
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
   const [reactionCount, setReactionCount] = useState(0);
+  const [shared, setShared] = useState(false);
 
   const isMine = user?.uid === post.userId;
+
+  const handleShare = async () => {
+    const text = `${post.caption} — Picto 🪩🌍 No words. Just emoji.`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ text, url: SITE_URL });
+      } else {
+        await navigator.clipboard.writeText(`${text} ${SITE_URL}`);
+      }
+      setShared(true);
+      setTimeout(() => setShared(false), 1500);
+    } catch {
+      // 사용자가 공유 시트를 닫은 경우 등 — 무시
+    }
+  };
 
   return (
     <article className="feed-card">
@@ -62,13 +80,18 @@ export const FeedCard = ({ post, onDelete }: { post: Post; onDelete?: () => void
 
       <div className="card-footer">
         <ReactionTray postId={post.id} onCountChange={setReactionCount} />
-        <button
-          className="comment-trigger"
-          onClick={() => setIsCommentsOpen(true)}
-          aria-label="💬"
-        >
-          💬
-        </button>
+        <div className="footer-actions">
+          <button className="comment-trigger" onClick={handleShare} aria-label="share">
+            {shared ? '✅' : '📤'}
+          </button>
+          <button
+            className="comment-trigger"
+            onClick={() => setIsCommentsOpen(true)}
+            aria-label="💬"
+          >
+            💬
+          </button>
+        </div>
       </div>
 
       <CommentDrawer
@@ -167,6 +190,10 @@ export const FeedCard = ({ post, onDelete }: { post: Post; onDelete?: () => void
           justify-content: space-between;
           align-items: center;
           gap: 8px;
+        }
+        .footer-actions {
+          display: flex;
+          gap: 6px;
         }
         .comment-trigger {
           background: #f8f9fa;

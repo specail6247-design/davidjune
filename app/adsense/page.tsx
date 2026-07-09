@@ -15,7 +15,7 @@ const AdsensePage = () => {
       <section className="card notice">
         <h2>광고 관련 안내</h2>
         <p>
-          EmojiWorld는 광고를 통해 운영될 수 있습니다. 광고는 정책에 따라 표시되며, 개인정보를
+          Picto는 광고를 통해 운영될 수 있습니다. 광고는 정책에 따라 표시되며, 개인정보를
           이용한 맞춤형 타겟팅은 최소화합니다.
         </p>
       </section>
@@ -44,7 +44,7 @@ const AdsensePage = () => {
       <section className="card">
         <h2>투명성</h2>
         <p>
-          EmojiWorld는 실제 신원 확인, 인증, 승인과 같은 표현을 사용하지 않습니다. 모든 정보는
+          Picto는 실제 신원 확인, 인증, 승인과 같은 표현을 사용하지 않습니다. 모든 정보는
           이모지 활동 기반의 상징적 정보입니다.
         </p>
       </section>

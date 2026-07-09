@@ -5,8 +5,8 @@ import Link from 'next/link';
 const FAQPage = () => {
   const faqs = [
     {
-      question: 'What is the main purpose of EmojiWorld?',
-      answer: 'The main purpose of EmojiWorld is to create a fun and simple communication space where people can express their feelings and daily lives using only emojis, without the need for text in the main feed.',
+      question: 'What is the main purpose of Picto?',
+      answer: 'The main purpose of Picto is to create a fun and simple communication space where people can express their feelings and daily lives using only emojis, without the need for text in the main feed.',
     },
     {
       question: 'Can I use text at all on this platform?',
@@ -22,7 +22,7 @@ const FAQPage = () => {
     },
     {
         question: 'Why am I seeing ads?',
-        answer: 'To maintain and operate the EmojiWorld service for free, we run a limited number of advertisements. We strive to place ads in a way that does not disrupt your user experience. Revenue from ads helps us improve the service and develop new features.',
+        answer: 'To maintain and operate the Picto service for free, we run a limited number of advertisements. We strive to place ads in a way that does not disrupt your user experience. Revenue from ads helps us improve the service and develop new features.',
     }
   ];
 

@@ -21,7 +21,7 @@ const copy = {
     statCountries: 'One planet',
     statBarrier: 'Language barriers',
     statAges: 'Ages welcome',
-    whyTitle: 'Why EmojiWorld beats a photo feed 📸',
+    whyTitle: 'Why Picto beats a photo feed 📸',
     whySub: 'Not another Instagram clone. Four things nobody else does.',
     why: [
       {
@@ -32,7 +32,7 @@ const copy = {
       {
         emoji: '❤️➡️📸',
         title: 'Photos are earned',
-        desc: 'Anyone can spam photos elsewhere. Here, 5 reactions = 1 photo ticket. When you see a photo on EmojiWorld, it means the community wanted it.',
+        desc: 'Anyone can spam photos elsewhere. Here, 5 reactions = 1 photo ticket. When you see a photo on Picto, it means the community wanted it.',
       },
       {
         emoji: '🛡️',
@@ -51,7 +51,7 @@ const copy = {
       { emoji: '❤️', title: '2. Collect reactions', desc: 'The world reacts with hearts, laughs and fire. Every reaction fills your photo meter.' },
       { emoji: '📸', title: '3. Unlock photos', desc: 'Every 5 reactions earns a photo ticket. Drop a real photo — the feed pays attention.' },
     ],
-    premiumTitle: 'EmojiWorld Plus ✨',
+    premiumTitle: 'Picto Plus ✨',
     premiumSub: 'Coming soon — support the world’s friendliest network.',
     premium: [
       { emoji: '🎨', title: 'Premium emoji packs', desc: 'Exclusive character & 3D emoji packs.' },
@@ -79,7 +79,7 @@ const copy = {
     ],
     finalTitle: 'The world is waiting to hear you 🌍',
     finalSub: 'Say it without words.',
-    finalCta: '🚀 Open EmojiWorld',
+    finalCta: '🚀 Open Picto',
     footerAbout: 'About',
     footerFaq: 'FAQ',
     footerTerms: 'Terms',
@@ -111,7 +111,7 @@ const copy = {
       {
         emoji: '❤️➡️📸',
         title: '사진은 특권',
-        desc: '다른 곳에선 누구나 사진을 쏟아내죠. 여기선 반응 5개 = 사진 티켓 1장. EmojiWorld의 사진은 커뮤니티가 원해서 올라온 사진입니다.',
+        desc: '다른 곳에선 누구나 사진을 쏟아내죠. 여기선 반응 5개 = 사진 티켓 1장. Picto의 사진은 커뮤니티가 원해서 올라온 사진입니다.',
       },
       {
         emoji: '🛡️',
@@ -130,7 +130,7 @@ const copy = {
       { emoji: '❤️', title: '2. 반응 모으기', desc: '전 세계가 하트·웃음·불꽃으로 반응해요. 반응 하나하나가 사진 게이지를 채웁니다.' },
       { emoji: '📸', title: '3. 사진 잠금해제', desc: '반응 5개마다 사진 티켓 1장. 진짜 사진을 올리면 피드가 주목합니다.' },
     ],
-    premiumTitle: 'EmojiWorld Plus ✨',
+    premiumTitle: 'Picto Plus ✨',
     premiumSub: '곧 출시 — 세상에서 가장 다정한 네트워크를 응원해주세요.',
     premium: [
       { emoji: '🎨', title: '프리미엄 이모지 팩', desc: '독점 캐릭터 · 3D 이모지 팩.' },
@@ -158,7 +158,7 @@ const copy = {
     ],
     finalTitle: '세상이 당신의 이야기를 기다려요 🌍',
     finalSub: '말없이 말해보세요.',
-    finalCta: '🚀 EmojiWorld 입장하기',
+    finalCta: '🚀 Picto 입장하기',
     footerAbout: '소개',
     footerFaq: 'FAQ',
     footerTerms: '이용약관',
@@ -192,7 +192,7 @@ const HomePage = () => {
       {/* Nav */}
       <nav className="nav">
         <Link href="/" className="nav-logo">
-          🪩🌍 <span className="nav-brand">EmojiWorld</span>
+          🪩🌍 <span className="nav-brand">Picto</span>
         </Link>
         <div className="nav-links">
           <a href="#why">{t.navFeatures}</a>
@@ -344,7 +344,7 @@ const HomePage = () => {
           <Link href="/terms">{t.footerTerms}</Link>
           <Link href="/privacy">{t.footerPrivacy}</Link>
         </div>
-        <p className="footer-copy">© {new Date().getFullYear()} EmojiWorld 🪩🌍</p>
+        <p className="footer-copy">© {new Date().getFullYear()} Picto 🪩🌍</p>
       </footer>
 
       <style jsx>{`

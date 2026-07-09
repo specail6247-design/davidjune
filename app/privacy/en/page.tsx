@@ -13,7 +13,7 @@ export default function PrivacyEnPage() {
       </header>
       <section className="card">
         <h2>Core Principles</h2>
-        <p>EmojiWorld does not collect or reveal real personal identity data.</p>
+        <p>Picto does not collect or reveal real personal identity data.</p>
         <ul>
           <li>No real names, phone numbers, or precise locations are collected.</li>
           <li>Email is used only for login and is never shown to users.</li>
