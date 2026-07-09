@@ -1,10 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { ReactionTray } from './ReactionTray';
 import { CommentDrawer } from './CommentDrawer';
 import { useAuth } from '../../lib/AuthContext';
 import { Post, REACTIONS_PER_TICKET } from '../../lib/postsClient';
+import {
+  followUser,
+  unfollowUser,
+  isFollowing,
+  getFollowerCount,
+} from '../../lib/followClient';
 
 const timeAgo = (createdAt: Post['createdAt']) => {
   if (!createdAt || typeof createdAt.toMillis !== 'function') return '✨';
@@ -21,11 +28,49 @@ const SITE_URL = 'https://emojiworld-195a0.web.app';
 
 export const FeedCard = ({ post, onDelete }: { post: Post; onDelete?: () => void }) => {
   const { user } = useAuth();
+  const router = useRouter();
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
   const [reactionCount, setReactionCount] = useState(0);
   const [shared, setShared] = useState(false);
+  const [followers, setFollowers] = useState<number | null>(null);
+  const [following, setFollowing] = useState(false);
+  const [followBusy, setFollowBusy] = useState(false);
 
   const isMine = user?.uid === post.userId;
+
+  useEffect(() => {
+    getFollowerCount(post.userId).then(setFollowers).catch(() => {});
+  }, [post.userId]);
+
+  useEffect(() => {
+    if (user && user.uid !== post.userId) {
+      isFollowing(user.uid, post.userId).then(setFollowing).catch(() => {});
+    }
+  }, [user, post.userId]);
+
+  const handleFollow = async () => {
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+    if (followBusy) return;
+    setFollowBusy(true);
+    try {
+      if (following) {
+        await unfollowUser(user.uid, post.userId);
+        setFollowing(false);
+        setFollowers((prev) => Math.max(0, (prev ?? 1) - 1));
+      } else {
+        await followUser(user.uid, post.userId);
+        setFollowing(true);
+        setFollowers((prev) => (prev ?? 0) + 1);
+      }
+    } catch (error) {
+      console.error('Follow failed:', error);
+    } finally {
+      setFollowBusy(false);
+    }
+  };
 
   const handleShare = async () => {
     const text = `${post.caption} — Picto 🪩🌍 No words. Just emoji.`;
@@ -49,9 +94,20 @@ export const FeedCard = ({ post, onDelete }: { post: Post; onDelete?: () => void
         <div className="user-info">
           <div className="user-name">
             {post.countryEmoji || '🌍'} {isMine && <span className="mine-badge">⭐</span>}
+            {followers !== null && <span className="follower-badge">👥 {followers}</span>}
           </div>
           <div className="post-time">🕐 {timeAgo(post.createdAt)}</div>
         </div>
+        {!isMine && (
+          <button
+            className={`follow-btn ${following ? 'following' : ''}`}
+            onClick={handleFollow}
+            disabled={followBusy}
+            aria-label={following ? 'unfollow' : 'follow'}
+          >
+            {following ? '✔️' : '➕'}
+          </button>
+        )}
         <div className="mood-emoji">{post.moodEmoji}</div>
         {isMine && onDelete && (
           <button className="delete-btn" onClick={onDelete} aria-label="🗑️">
@@ -104,11 +160,18 @@ export const FeedCard = ({ post, onDelete }: { post: Post; onDelete?: () => void
         .feed-card {
           background: #fff;
           border-radius: 24px;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+          border: 1px solid rgba(107, 91, 255, 0.07);
+          box-shadow: 0 10px 30px rgba(20, 10, 60, 0.07);
           padding: 16px;
           display: grid;
           gap: 12px;
           position: relative;
+          animation: riseIn 0.35s ease both;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .feed-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 16px 38px rgba(20, 10, 60, 0.11);
         }
         .card-header {
           display: flex;
@@ -123,7 +186,7 @@ export const FeedCard = ({ post, onDelete }: { post: Post; onDelete?: () => void
           display: grid;
           place-items: center;
           font-size: 26px;
-          box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+          box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(255, 79, 216, 0.25);
         }
         .user-info {
           flex: 1;
@@ -134,6 +197,34 @@ export const FeedCard = ({ post, onDelete }: { post: Post; onDelete?: () => void
         }
         .mine-badge {
           font-size: 12px;
+        }
+        .follower-badge {
+          font-size: 11px;
+          font-weight: 700;
+          color: #8a8a9a;
+          background: #f4f4fb;
+          border-radius: 999px;
+          padding: 3px 8px;
+          margin-left: 6px;
+          vertical-align: middle;
+        }
+        .follow-btn {
+          border: none;
+          background: linear-gradient(135deg, #ffe3f6, #e6e2ff);
+          border-radius: 999px;
+          width: 36px;
+          height: 36px;
+          font-size: 14px;
+          cursor: pointer;
+          box-shadow: 0 4px 10px rgba(107, 91, 255, 0.18);
+          transition: transform 0.15s;
+        }
+        .follow-btn:hover {
+          transform: scale(1.1);
+        }
+        .follow-btn.following {
+          background: #f0f0f5;
+          box-shadow: none;
         }
         .post-time {
           font-size: 12px;

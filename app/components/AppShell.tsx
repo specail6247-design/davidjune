@@ -19,7 +19,7 @@ export const AppShell = ({ children }: AppShellProps) => {
       <WelcomeTour forceOpen={tourOpen || undefined} onClose={() => setTourOpen(false)} />
       <header className="app-topbar">
         <Link href="/" className="shell-logo" aria-label="Picto home">
-          🪩🌍
+          🪩🌍 <span className="shell-wordmark">Picto</span>
         </Link>
         <div className="topbar-actions">
           <button className="help-btn" onClick={() => setTourOpen(true)} aria-label="guide">
@@ -54,6 +54,18 @@ export const AppShell = ({ children }: AppShellProps) => {
         .app-topbar :global(.shell-logo) {
           font-size: 26px;
           text-decoration: none;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .app-topbar :global(.shell-wordmark) {
+          font-size: 21px;
+          font-weight: 800;
+          letter-spacing: -0.5px;
+          background: linear-gradient(135deg, #ff4fd8, #6b5bff);
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
         }
         .topbar-actions {
           display: flex;

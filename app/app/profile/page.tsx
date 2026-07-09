@@ -20,6 +20,7 @@ import {
 import { DEV_MODE } from '../../../lib/appConfig';
 import { getQaState } from '../../../lib/qaState';
 import { listRecentUserMissions } from '../../../lib/missionsV2Client';
+import { getFollowerCount, getFollowingCount } from '../../../lib/followClient';
 
 const emojiSizes = [
   { label: '🐥', value: '24px' },
@@ -58,10 +59,22 @@ const ProfilePage = () => {
   const [giftBurst, setGiftBurst] = useState(false);
   const [giftModal, setGiftModal] = useState<{ tier: string; emoji: string } | null>(null);
   const [shareMode, setShareMode] = useState(false);
+  const [followStats, setFollowStats] = useState<{ followers: number; following: number } | null>(
+    null,
+  );
 
   useEffect(() => {
     setShareMode(new URLSearchParams(window.location.search).get('share') === '1');
   }, []);
+
+  useEffect(() => {
+    if (!userId || userId === 'demo-user') return;
+    Promise.all([getFollowerCount(userId), getFollowingCount(userId)])
+      .then(([followerCount, followingCount]) =>
+        setFollowStats({ followers: followerCount, following: followingCount }),
+      )
+      .catch(() => {});
+  }, [userId]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -246,6 +259,8 @@ const ProfilePage = () => {
         <div className="status-pill" aria-label={explorerLabel}>
           {explorerLabel}
         </div>
+        <div className="status-pill">👥 {followStats?.followers ?? 0} 팔로워</div>
+        <div className="status-pill">🫶 {followStats?.following ?? 0} 팔로잉</div>
       </div>
       <div className="row">
         {emojiSizes.map((size) => (

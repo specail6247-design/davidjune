@@ -496,6 +496,16 @@ const HomePage = () => {
           max-width: 340px;
           justify-self: center;
           width: 100%;
+          animation: phoneFloat 5s ease-in-out infinite;
+        }
+        @keyframes phoneFloat {
+          0%,
+          100% {
+            transform: translateY(0) rotate(0.5deg);
+          }
+          50% {
+            transform: translateY(-12px) rotate(-0.5deg);
+          }
         }
         .phone-notch {
           width: 110px;

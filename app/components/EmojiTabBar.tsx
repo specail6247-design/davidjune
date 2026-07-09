@@ -63,6 +63,7 @@ export const EmojiTabBar = () => {
           background: linear-gradient(135deg, #ff4fd8, #6b5bff);
           color: #fff;
           box-shadow: 0 16px 30px rgba(107, 91, 255, 0.35);
+          animation: popIn 0.3s ease;
         }
         .tab-bar :global(.tab-item:hover) {
           transform: translateY(-1px);
