@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<style>
+  @page { size: A4; margin: 0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body {
+    font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, sans-serif;
+    color: #1a1a2e; line-height: 1.6; font-size: 11pt;
+  }
+  .page {
+    width: 210mm; height: 297mm; padding: 15mm 18mm;
+    page-break-after: always; position: relative; background: #fff; overflow: hidden;
+  }
+  .page:last-child { page-break-after: auto; }
+
+  /* Cover */
+  .cover {
+    background: radial-gradient(circle at 20% 10%, #fff1f7 0%, #f2f4ff 55%, #e9fff5 100%);
+    display: flex; flex-direction: column; justify-content: center; padding: 30mm;
+  }
+  .cover .logo { font-size: 42pt; font-weight: 800; letter-spacing: -1px; margin-bottom: 6mm; }
+  .cover h1 { font-size: 40pt; line-height: 1.1; letter-spacing: -2px; font-weight: 800; margin-bottom: 8mm; }
+  .cover h1 .grad { background: linear-gradient(135deg,#ff4fd8,#6b5bff); -webkit-background-clip: text; background-clip: text; color: transparent; display: block; }
+  .cover .tag { font-size: 15pt; color: #55556a; font-weight: 600; margin-bottom: 4mm; }
+  .cover .meta { margin-top: auto; font-size: 10pt; color: #8a8a9a; border-top: 1px solid #ddd; padding-top: 5mm; }
+  .cover .pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8mm; }
+  .cover .pill { background: #fff; border-radius: 999px; padding: 8px 16px; font-size: 10pt; font-weight: 700; box-shadow: 0 6px 16px rgba(0,0,0,.06); }
+
+  /* Headings */
+  h2.section { font-size: 22pt; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 3mm; padding-bottom: 3mm; border-bottom: 3px solid; border-image: linear-gradient(90deg,#ff4fd8,#6b5bff) 1; }
+  .section-intro { color: #55556a; font-size: 10.5pt; margin-bottom: 4mm; }
+  h3.cat { font-size: 14pt; font-weight: 800; margin: 5mm 0 3mm; display: flex; align-items: center; gap: 8px; }
+
+  /* Idea cards */
+  .idea { background: #faf9ff; border-radius: 11px; padding: 3.5mm 5mm; margin-bottom: 3mm; border-left: 4px solid #6b5bff; }
+  .idea.hot { border-left-color: #ff4fd8; background: #fff5fb; }
+  .idea-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 1.5mm; }
+  .idea-num { font-weight: 800; color: #6b5bff; font-size: 12pt; }
+  .idea-title { font-weight: 800; font-size: 11.5pt; }
+  .idea-body { font-size: 9.5pt; color: #33334d; margin-bottom: 1.8mm; line-height: 1.5; }
+  .idea-meta { display: flex; gap: 6px; flex-wrap: wrap; }
+  .badge { font-size: 8.5pt; font-weight: 700; border-radius: 999px; padding: 2px 9px; }
+  .b-rev { background: #e6f9ee; color: #1a8f4a; }
+  .b-easy { background: #e6f0ff; color: #2b6cd4; }
+  .b-mid { background: #fff4e0; color: #c47f00; }
+  .b-hard { background: #ffe9ee; color: #c0456b; }
+  .b-when { background: #f0ecff; color: #6b5bff; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin: 4mm 0; }
+  th { background: linear-gradient(135deg,#ff4fd8,#6b5bff); color: #fff; padding: 8px 10px; text-align: left; font-weight: 700; }
+  td { padding: 7px 10px; border-bottom: 1px solid #eee; }
+  tr:nth-child(even) td { background: #faf9ff; }
+
+  .callout { background: linear-gradient(135deg,#fff7d6,#ffeff9); border-radius: 12px; padding: 5mm 6mm; margin: 5mm 0; font-size: 10pt; }
+  .callout b { color: #a07800; }
+
+  .footer { position: absolute; bottom: 10mm; left: 18mm; right: 18mm; display: flex; justify-content: space-between; font-size: 8pt; color: #b0b0c0; border-top: 1px solid #eee; padding-top: 3mm; }
+
+  .two-col { column-count: 2; column-gap: 8mm; }
+  .toc-item { display: flex; justify-content: space-between; padding: 3mm 0; border-bottom: 1px dashed #ddd; font-size: 11pt; }
+  .toc-item .n { font-weight: 800; color: #6b5bff; }
+  .lead { font-size: 12pt; font-weight: 700; margin: 4mm 0 2mm; }
+</style>
+</head>
+<body>
+
+<!-- ============ COVER ============ -->
+<div class="page cover">
+  <div class="logo">🪩🌍 Picto</div>
+  <h1>수익화 아이디어<br><span class="grad">무한대 플레이북</span></h1>
+  <div class="tag">"말이 없는 SNS"를 돈이 되는 사업으로 — 40+ 아이디어 총망라</div>
+  <div class="pills">
+    <span class="pill">💰 40+ 수익 모델</span>
+    <span class="pill">📊 10개 카테고리</span>
+    <span class="pill">🚀 단계별 로드맵</span>
+    <span class="pill">🌍 글로벌 확장</span>
+  </div>
+  <div class="meta">
+    <b>Picto</b> (구 EmojiWorld) · 이모지 전용 글로벌 소셜 네트워크<br>
+    작성: 2026년 7월 · 라이브: emojiworld-195a0.web.app<br>
+    본 문서는 사업 전략 참고용이며, 투자·재무 자문이 아닙니다.
+  </div>
+</div>
+
+<!-- ============ 목차 + 철학 ============ -->
+<div class="page">
+  <h2 class="section">🧭 시작하며 — 우리는 왜 다르게 번다</h2>
+  <p class="section-intro">인스타그램은 <b>무한한 콘텐츠 → 광고 지면</b>을 팝니다. 사용자가 상품이죠. Picto의 무기는 정반대입니다.</p>
+
+  <div class="callout">
+    <b>핵심 통찰:</b> Picto에선 <b>사진이 희소자원</b>입니다(반응 5개 = 사진 티켓 1장). 그리고 텍스트가 없어서 <b>이모지·아바타가 유일한 자기표현 수단</b>이죠. 희소성 + 자기표현 = 사람들이 <b>자발적으로 돈을 내는</b> 두 가지 강력한 동기입니다. 광고로 경험을 해치지 않고도 벌 수 있습니다.
+  </div>
+
+  <div class="lead">📖 이 문서의 구성</div>
+  <div class="toc-item"><span><span class="n">01</span> &nbsp;직접 결제 — 사용자가 내는 돈</span><span>💳</span></div>
+  <div class="toc-item"><span><span class="n">02</span> &nbsp;구독 — Picto Plus 생태계</span><span>✨</span></div>
+  <div class="toc-item"><span><span class="n">03</span> &nbsp;크리에이터 이코노미 — 제2의 수익화</span><span>🎨</span></div>
+  <div class="toc-item"><span><span class="n">04</span> &nbsp;브랜드 & 스폰서십</span><span>🤝</span></div>
+  <div class="toc-item"><span><span class="n">05</span> &nbsp;커머스 — 이모지가 파는 물건</span><span>🛍️</span></div>
+  <div class="toc-item"><span><span class="n">06</span> &nbsp;데이터 & 인사이트</span><span>📊</span></div>
+  <div class="toc-item"><span><span class="n">07</span> &nbsp;B2B & API 라이선스</span><span>🔌</span></div>
+  <div class="toc-item"><span><span class="n">08</span> &nbsp;게이미피케이션 & 이벤트</span><span>🎮</span></div>
+  <div class="toc-item"><span><span class="n">09</span> &nbsp;오프라인 & 굿즈</span><span>📦</span></div>
+  <div class="toc-item"><span><span class="n">10</span> &nbsp;글로벌 & 특수 시장</span><span>🌏</span></div>
+  <div class="toc-item"><span>부록 &nbsp;단계별 로드맵 · 재무 시나리오</span><span>🗺️</span></div>
+
+  <div class="footer"><span>Picto 수익화 플레이북</span><span>2</span></div>
+</div>
+
+<!-- ============ 01 직접 결제 ============ -->
+<div class="page">
+  <h2 class="section">01 💳 직접 결제 — 사용자가 내는 돈</h2>
+  <p class="section-intro">희소성 루프를 그대로 상품화합니다. 모바일 게임이 20년간 검증한 모델입니다.</p>
+
+  <div class="idea hot">
+    <div class="idea-head"><span class="idea-num">1</span><span class="idea-title">📸 사진 티켓 추가 구매</span></div>
+    <div class="idea-body">반응을 다 못 모아도 사진을 올리고 싶은 사람에게 티켓을 판매. "기다리거나(무료), 사거나(유료)"의 전형. 1장 $0.99, 10장 묶음 $6.99.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 핵심 캐시카우</span><span class="badge b-easy">난이도 쉬움</span><span class="badge b-when">v2</span></div>
+  </div>
+
+  <div class="idea hot">
+    <div class="idea-head"><span class="idea-num">2</span><span class="idea-title">⚡ 부스트 — 내 게시물 노출 UP</span></div>
+    <div class="idea-body">내 이모지 스토리를 몇 시간 동안 피드 상단/탐색에 고정. 자기표현 욕구 + 관심 욕구를 동시에 자극. 24시간 부스트 $1.99.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 높음</span><span class="badge b-easy">난이도 쉬움</span><span class="badge b-when">v1.5</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">3</span><span class="idea-title">🎁 이모지 기프트(선물)</span></div>
+    <div class="idea-body">다른 유저에게 유료 이모지 선물 전송(라이브 스트리밍의 '별풍선' 모델). 받은 사람은 영구 소장. 크리에이터 후원 문화로 확장 가능.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 매우 높음</span><span class="badge b-mid">난이도 중간</span><span class="badge b-when">v2</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">4</span><span class="idea-title">💎 프리미엄 반응(리액션)</span></div>
+    <div class="idea-body">기본 6개 반응 외에 애니메이션·희귀 반응을 유료로. 반응을 받은 사람도 특별함을 느껴 바이럴. 팩당 $2.99.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 중간</span><span class="badge b-easy">난이도 쉬움</span><span class="badge b-when">v1.5</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">5</span><span class="idea-title">🔓 티켓 스트릭 세이버</span></div>
+    <div class="idea-body">연속 출석(스트릭)이 끊길 위기일 때 '하루 방어권'을 판매. Duolingo가 검증한 손실 회피 심리. $0.99.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 중간</span><span class="badge b-easy">난이도 쉬움</span><span class="badge b-when">v2</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">6</span><span class="idea-title">🎰 Picto 코인(가상 화폐)</span></div>
+    <div class="idea-body">모든 소액결제를 하나의 코인으로 통합. 묶음 구매 시 할인 → 선결제 유도 → 이탈률 감소. LINE·틱톡 코인 모델.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 인프라</span><span class="badge b-mid">난이도 중간</span><span class="badge b-when">v2</span></div>
+  </div>
+
+  <div class="footer"><span>Picto 수익화 플레이북 · 01 직접 결제</span><span>3</span></div>
+</div>
+
+<!-- ============ 02 구독 ============ -->
+<div class="page">
+  <h2 class="section">02 ✨ 구독 — Picto Plus 생태계</h2>
+  <p class="section-intro">텍스트가 없는 SNS에서 아바타·이모지는 유일한 자기표현. Discord Nitro처럼 코스메틱 지불 의사가 높습니다.</p>
+
+  <div class="idea hot">
+    <div class="idea-head"><span class="idea-num">7</span><span class="idea-title">👑 Picto Plus (월 구독)</span></div>
+    <div class="idea-body">프리미엄 이모지 팩 + 프로필 오라 + 무제한 부스트 할인 + 광고 없음 + 스트릭 자동 방어. 월 $4.99 / 연 $39.99.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 안정적 MRR</span><span class="badge b-mid">난이도 중간</span><span class="badge b-when">v1.5</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">8</span><span class="idea-title">🌟 프로필 오라 & 테마</span></div>
+    <div class="idea-body">아바타 주변 빛나는 효과, 커스텀 프로필 배경, 애니메이션 국기. 자기표현 = 지불 동기. 이미 /upgrade에 UI 존재.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 높음</span><span class="badge b-easy">난이도 쉬움</span><span class="badge b-when">v1.5</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">9</span><span class="idea-title">🎫 티어별 구독 (Basic/Plus/Elite)</span></div>
+    <div class="idea-body">이미 코드에 3단계 플랜 구조 존재. Elite는 독점 이모지 + 매월 티켓 지급 + 우선 고객지원. 상위 티어일수록 마진 극대화.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 높음</span><span class="badge b-easy">난이도 쉬움</span><span class="badge b-when">v1.5</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">10</span><span class="idea-title">👨‍👩‍👧 가족 플랜</span></div>
+    <div class="idea-body">조부모-손주 등 최대 6명 묶음 구독. "텍스트 없는 안전 SNS" 포지셔닝과 완벽 결합. 월 $9.99.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 중간</span><span class="badge b-mid">난이도 중간</span><span class="badge b-when">v2</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">11</span><span class="idea-title">🎂 시즌 패스 (배틀패스)</span></div>
+    <div class="idea-body">매 시즌(3개월) 미션 달성 시 한정 이모지·오라 언락. 무료 트랙 + 유료 트랙. 게임형 리텐션의 최강 무기. 시즌당 $9.99.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 매우 높음</span><span class="badge b-hard">난이도 높음</span><span class="badge b-when">v3</span></div>
+  </div>
+
+  <div class="footer"><span>Picto 수익화 플레이북 · 02 구독</span><span>4</span></div>
+</div>
+
+<!-- ============ 03 크리에이터 ============ -->
+<div class="page">
+  <h2 class="section">03 🎨 크리에이터 이코노미 — 제2의 수익화</h2>
+  <p class="section-intro">LINE 스티커 마켓은 연 수천억 규모. K-캐릭터 감성은 글로벌 수출 검증됨. Picto의 최대 성장 잠재력.</p>
+
+  <div class="idea hot">
+    <div class="idea-head"><span class="idea-num">12</span><span class="idea-title">🖌️ 이모지 팩 마켓플레이스</span></div>
+    <div class="idea-body">작가들이 캐릭터·3D 이모지 팩을 제작·판매, Picto가 30% 수수료. 콘텐츠를 우리가 안 만들어도 늘어나는 구조.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 무한 확장</span><span class="badge b-hard">난이도 높음</span><span class="badge b-when">v3</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">13</span><span class="idea-title">✏️ 이모지 스튜디오 (창작 툴)</span></div>
+    <div class="idea-body">앱 내에서 직접 이모지·스티커를 그리는 도구. 프리미엄 브러시·템플릿 유료. 창작자 진입장벽↓, 마켓 공급↑.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 중간</span><span class="badge b-hard">난이도 높음</span><span class="badge b-when">v3</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">14</span><span class="idea-title">💌 크리에이터 후원(팁)</span></div>
+    <div class="idea-body">인기 이모지 아티스트에게 팬이 직접 후원. 수수료 수취 + 크리에이터 락인. 후원 문화가 곧 플랫폼 방어막.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 중간</span><span class="badge b-mid">난이도 중간</span><span class="badge b-when">v3</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">15</span><span class="idea-title">⭐ 버라이어티 크리에이터 인증</span></div>
+    <div class="idea-body">유료 인증 배지 + 분석 대시보드 + 우선 노출. 크리에이터 대상 B2C 구독(트위터 블루 모델). 월 $7.99.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 중간</span><span class="badge b-mid">난이도 중간</span><span class="badge b-when">v3</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">16</span><span class="idea-title">🏆 이모지 디자인 콘테스트</span></div>
+    <div class="idea-body">브랜드 협찬 콘테스트 개최 → 참가비 or 브랜드 스폰서료. 우승작은 공식 팩으로 판매(수익 배분).</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 중간</span><span class="badge b-mid">난이도 중간</span><span class="badge b-when">v3</span></div>
+  </div>
+
+  <div class="footer"><span>Picto 수익화 플레이북 · 03 크리에이터</span><span>5</span></div>
+</div>
+
+<!-- ============ 04 브랜드 ============ -->
+<div class="page">
+  <h2 class="section">04 🤝 브랜드 & 스폰서십</h2>
+  <p class="section-intro">광고로 피드를 더럽히지 않고, 브랜드가 '이모지 문화'에 참여하게 합니다. 옛 트위터 브랜드 이모지는 개당 $1M였습니다.</p>
+
+  <div class="idea hot">
+    <div class="idea-head"><span class="idea-num">17</span><span class="idea-title">🎬 브랜드 스폰서 이모지 팩</span></div>
+    <div class="idea-body">영화 개봉·신제품 출시 기념 한정 이모지 팩. 사용자에겐 무료, 브랜드가 비용 지불. 자연스러운 바이럴 광고.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 대형 계약</span><span class="badge b-mid">난이도 중간</span><span class="badge b-when">v3</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">18</span><span class="idea-title">📅 브랜드 '오늘의 주제' 후원</span></div>
+    <div class="idea-body">데일리 프롬프트를 브랜드가 스폰서("☕ 오늘 마신 커피는? - Starbucks 협찬"). 전 세계가 참여하는 네이티브 캠페인.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 높음</span><span class="badge b-easy">난이도 쉬움</span><span class="badge b-when">v2</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">19</span><span class="idea-title">🏷️ 브랜드 공식 계정 & 챌린지</span></div>
+    <div class="idea-body">브랜드가 이모지 챌린지 개최("우리 로고를 이모지로!"). 참여형 UGC 캠페인 패키지 판매. 언어 무관 = 글로벌 동시 진행.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 높음</span><span class="badge b-mid">난이도 중간</span><span class="badge b-when">v3</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">20</span><span class="idea-title">🎨 브랜드 프로필 테마</span></div>
+    <div class="idea-body">스포츠팀·아이돌·브랜드 테마 프로필 오라를 팬에게 판매(수익 배분). 팬덤 = 지불 의사 최상위.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 중간</span><span class="badge b-mid">난이도 중간</span><span class="badge b-when">v3</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">21</span><span class="idea-title">📺 리워드 광고 (선택형)</span></div>
+    <div class="idea-body">"광고 보고 티켓 1장 받기" — 강제 아닌 선택. 무료 유저 수익화 + UX 훼손 제로. 게임에서 검증된 최고 효율.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 볼륨 수익</span><span class="badge b-easy">난이도 쉬움</span><span class="badge b-when">v2</span></div>
+  </div>
+
+  <div class="footer"><span>Picto 수익화 플레이북 · 04 브랜드</span><span>6</span></div>
+</div>
+
+<!-- ============ 05 커머스 ============ -->
+<div class="page">
+  <h2 class="section">05 🛍️ 커머스 — 이모지가 파는 물건</h2>
+  <p class="section-intro">이모지 캐릭터 IP를 실물로 확장. 카카오프렌즈가 증명한 캐릭터 커머스의 힘.</p>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">22</span><span class="idea-title">🧸 이모지 캐릭터 굿즈샵</span></div>
+    <div class="idea-body">인기 이모지 팩을 인형·스티커·폰케이스로. POD(주문제작) 방식이면 재고 리스크 제로. 캐릭터 IP 사업화.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 높음</span><span class="badge b-hard">난이도 높음</span><span class="badge b-when">v3+</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">23</span><span class="idea-title">👕 나의 이모지 게시물 → 티셔츠</span></div>
+    <div class="idea-body">내가 만든 이모지 조합을 굿즈로 주문. "😴💭☕ 티셔츠" 개인화 커머스. 자기표현의 물리적 확장.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 중간</span><span class="badge b-mid">난이도 중간</span><span class="badge b-when">v3</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">24</span><span class="idea-title">🎴 디지털 컬렉터블 이모지</span></div>
+    <div class="idea-body">한정판 넘버링 이모지(예: 100개 한정). 희소성 = 수집 욕구. 굳이 블록체인 아니어도 '한정' 자체가 상품.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 중간</span><span class="badge b-mid">난이도 중간</span><span class="badge b-when">v3</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">25</span><span class="idea-title">🛒 이모지 기반 소셜 커머스</span></div>
+    <div class="idea-body">"🍜 게시물 → 근처 라면집 추천/제휴". 이모지가 곧 관심사 태그 → 커머스 제휴 수수료. 언어 장벽 없는 상품 발견.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 장기 잠재력</span><span class="badge b-hard">난이도 높음</span><span class="badge b-when">v4</span></div>
+  </div>
+
+  <div class="footer"><span>Picto 수익화 플레이북 · 05 커머스</span><span>7</span></div>
+</div>
+
+<!-- ============ 06-07 데이터 & B2B ============ -->
+<div class="page">
+  <h2 class="section">06 📊 데이터 & 인사이트</h2>
+  <p class="section-intro">이모지는 <b>언어 무관한 순수 감정 데이터</b>. 세상 어떤 플랫폼도 못 가진 자산입니다. (개인정보 아닌 집계 데이터만)</p>
+
+  <div class="idea hot">
+    <div class="idea-head"><span class="idea-num">26</span><span class="idea-title">🌡️ "오늘 지구의 기분" 트렌드 API</span></div>
+    <div class="idea-body">전 세계 무드 이모지 실시간 집계. 언론·연구기관·브랜드에 트렌드 리포트 판매. 무료 버전은 PR 머신("오늘 인류는 😴").</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 B2B 고마진</span><span class="badge b-mid">난이도 중간</span><span class="badge b-when">v3</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">27</span><span class="idea-title">📈 브랜드 감정 대시보드</span></div>
+    <div class="idea-body">특정 브랜드/주제에 대한 글로벌 이모지 반응을 구독형 대시보드로. 마케팅 리서치 시장 진입.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 B2B 고마진</span><span class="badge b-hard">난이도 높음</span><span class="badge b-when">v4</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">28</span><span class="idea-title">🧠 감정 AI 학습 데이터셋</span></div>
+    <div class="idea-body">익명화된 이모지-맥락 데이터를 AI 연구용으로 라이선스. 감정 인식 AI의 희귀한 다국어 학습 자원.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 잠재력</span><span class="badge b-hard">난이도 높음</span><span class="badge b-when">v4</span></div>
+  </div>
+
+  <h2 class="section" style="margin-top:10mm">07 🔌 B2B & API 라이선스</h2>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">29</span><span class="idea-title">🔧 "Picto 반응" 임베드 위젯</span></div>
+    <div class="idea-body">외부 사이트·블로그에 이모지 반응 위젯 제공(Disqus 모델). 무료 티어 + 프로 유료. 바이럴 유입 채널 겸 수익원.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 중간</span><span class="badge b-mid">난이도 중간</span><span class="badge b-when">v4</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">30</span><span class="idea-title">💬 이모지 온리 채팅 SDK</span></div>
+    <div class="idea-body">타 앱에 "언어 장벽 없는 채팅" 기능을 SDK로 라이선스. 글로벌 서비스·게임에 B2B 판매.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 B2B</span><span class="badge b-hard">난이도 높음</span><span class="badge b-when">v4</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">31</span><span class="idea-title">🏫 교육용 Picto (안전 SNS)</span></div>
+    <div class="idea-body">학교·기관에 '악플 불가능한 안전 소통 도구'로 B2B 라이선스. 아동 SNS 규제 강화 흐름에 순풍.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 B2B</span><span class="badge b-mid">난이도 중간</span><span class="badge b-when">v3</span></div>
+  </div>
+
+  <div class="footer"><span>Picto 수익화 플레이북 · 06-07 데이터·B2B</span><span>8</span></div>
+</div>
+
+<!-- ============ 08-09 게임 & 굿즈 ============ -->
+<div class="page">
+  <h2 class="section">08 🎮 게이미피케이션 & 이벤트</h2>
+  <p class="section-intro">참여 자체가 수익화 트리거가 되게. 재미가 곧 매출입니다.</p>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">32</span><span class="idea-title">🧩 이모지 퀴즈 게임</span></div>
+    <div class="idea-body">"🦁👑 = 무슨 영화?" 유저 출제 퀴즈. 힌트·정답 확인에 코인 사용, 유료 퀴즈팩. UGC 게임 루프.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 중간</span><span class="badge b-mid">난이도 중간</span><span class="badge b-when">v3</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">33</span><span class="idea-title">🎰 데일리 리워드 & 가챠</span></div>
+    <div class="idea-body">매일 출석 시 랜덤 이모지 뽑기. 유료 프리미엄 가챠로 희귀 이모지 획득. 수집 심리 자극.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 높음</span><span class="badge b-mid">난이도 중간</span><span class="badge b-when">v2</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">34</span><span class="idea-title">🏅 글로벌 이모지 챌린지 대회</span></div>
+    <div class="idea-body">주간 테마 콘테스트, 유료 참가 or 브랜드 스폰서. 상금 이모지·배지. 커뮤니티 활성화 + 수익.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 중간</span><span class="badge b-mid">난이도 중간</span><span class="badge b-when">v3</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">35</span><span class="idea-title">🔥 스트릭 리더보드 & 명예의 전당</span></div>
+    <div class="idea-body">연속 출석 랭킹 → 상위권 유료 특전. 경쟁 심리 = 리텐션 = 결제 전환. 기존 스탬프 시스템 재활용.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 간접</span><span class="badge b-easy">난이도 쉬움</span><span class="badge b-when">v2</span></div>
+  </div>
+
+  <h2 class="section" style="margin-top:9mm">09 📦 오프라인 & 굿즈</h2>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">36</span><span class="idea-title">🎉 이모지 팝업스토어 / 전시</span></div>
+    <div class="idea-body">인기 이모지 캐릭터 오프라인 팝업. 입장권 + 굿즈 판매 + 브랜드 협업. 카카오프렌즈 스토어 모델.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 이벤트성</span><span class="badge b-hard">난이도 높음</span><span class="badge b-when">v4+</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">37</span><span class="idea-title">💳 이모지 기프트카드</span></div>
+    <div class="idea-body">Picto 코인 충전 기프트카드를 편의점·온라인에 유통. 선물 문화 + 결제 접근성 확대.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 중간</span><span class="badge b-mid">난이도 중간</span><span class="badge b-when">v3</span></div>
+  </div>
+
+  <div class="footer"><span>Picto 수익화 플레이북 · 08-09 게임·굿즈</span><span>9</span></div>
+</div>
+
+<!-- ============ 10 글로벌 ============ -->
+<div class="page">
+  <h2 class="section">10 🌏 글로벌 & 특수 시장</h2>
+  <p class="section-intro">언어 장벽이 없다는 것 = 처음부터 전 세계가 시장. 이 강점을 수익으로 직결합니다.</p>
+
+  <div class="idea hot">
+    <div class="idea-head"><span class="idea-num">38</span><span class="idea-title">🗺️ 지역 특화 이모지 팩</span></div>
+    <div class="idea-body">각국 문화·음식·명절 이모지 팩(설날 🧧, 디왈리 🪔, 라마단 🌙). 현지 결제 최적화. 문화별 프리미엄.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 높음</span><span class="badge b-mid">난이도 중간</span><span class="badge b-when">v3</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">39</span><span class="idea-title">✈️ 여행자용 Picto</span></div>
+    <div class="idea-body">언어 안 통하는 여행지에서 이모지로 소통. 여행 브랜드·항공사 제휴, 여행 특화 이모지 팩.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 니치</span><span class="badge b-mid">난이도 중간</span><span class="badge b-when">v4</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">40</span><span class="idea-title">♿ 접근성 시장 (배리어프리)</span></div>
+    <div class="idea-body">난독증·언어장애·고령층 대상 '이모지 소통' 특화. 공공기관·복지 B2B + 사회적 가치 = ESG 투자 유치.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 B2B+투자</span><span class="badge b-hard">난이도 높음</span><span class="badge b-when">v4</span></div>
+  </div>
+
+  <div class="idea">
+    <div class="idea-head"><span class="idea-num">41</span><span class="idea-title">💕 이모지 소개팅/친구 매칭</span></div>
+    <div class="idea-body">이모지 취향 기반 글로벌 친구·소개팅 매칭. 프리미엄 매칭 구독. 언어 안 통해도 통하는 인연.</div>
+    <div class="idea-meta"><span class="badge b-rev">💰 높음</span><span class="badge b-hard">난이도 높음</span><span class="badge b-when">v4</span></div>
+  </div>
+
+  <div class="footer"><span>Picto 수익화 플레이북 · 10 글로벌</span><span>10</span></div>
+</div>
+
+<!-- ============ 로드맵 ============ -->
+<div class="page">
+  <h2 class="section">🗺️ 단계별 실행 로드맵</h2>
+  <p class="section-intro">한 번에 다 하지 마세요. 리텐션 먼저, 수익화는 그 위에 쌓습니다.</p>
+
+  <table>
+    <tr><th>단계</th><th>집중 아이디어</th><th>목표</th></tr>
+    <tr><td><b>v1 지금</b></td><td>①사진 티켓 루프 (무료)</td><td>리텐션 = 수익화의 토양</td></tr>
+    <tr><td><b>v1.5</b></td><td>⑦Plus 구독 · ②부스트 · ④프리미엄 반응</td><td>첫 매출 · 검증</td></tr>
+    <tr><td><b>v2</b></td><td>①티켓 판매 · ㉑리워드 광고 · ⑱브랜드 프롬프트 · ㉝가챠</td><td>매출 다각화</td></tr>
+    <tr><td><b>v3</b></td><td>⑫크리에이터 마켓 · ⑰스폰서 팩 · ㉖트렌드 API · ⑪시즌패스</td><td>플랫폼화 · 확장</td></tr>
+    <tr><td><b>v4+</b></td><td>㉒굿즈 · 커머스 · 매칭 · 접근성 B2B</td><td>IP·생태계 사업</td></tr>
+  </table>
+
+  <div class="callout">
+    <b>⚠️ 하지 말 것:</b> ① 강제 광고 (희소성 경험 파괴) · ② 텍스트 허용 (최대 차별점 붕괴) · ③ 팔로워 수로 비교 스트레스 유발 (전 연령 브랜드와 충돌) · ④ 리텐션 없는 상태에서 과금 서두르기 (독).
+  </div>
+
+  <h3 class="cat">💰 간단 재무 시나리오 (예시 · 가정)</h3>
+  <table>
+    <tr><th>MAU</th><th>유료 전환율</th><th>ARPPU(월)</th><th>월 매출(예상)</th></tr>
+    <tr><td>10,000</td><td>2%</td><td>$5</td><td>$1,000</td></tr>
+    <tr><td>100,000</td><td>3%</td><td>$6</td><td>$18,000</td></tr>
+    <tr><td>1,000,000</td><td>4%</td><td>$7</td><td>$280,000</td></tr>
+    <tr><td>10,000,000</td><td>5%</td><td>$8</td><td>$4,000,000</td></tr>
+  </table>
+  <p style="font-size:9pt; color:#8a8a9a; margin-top:2mm">※ 위 수치는 업계 벤치마크 기반 가정치이며 실제와 다를 수 있습니다. 여기에 광고·B2B·커머스·크리에이터 수수료가 추가로 얹힙니다.</p>
+
+  <div class="callout" style="background:linear-gradient(135deg,#e6f0ff,#f0ecff)">
+    <b>🎯 한 줄 요약:</b> Picto는 "광고로 버는 인스타"가 아니라, <b>사용자가 기꺼이 돈을 내는 자기표현 플랫폼</b>입니다. 희소성(티켓) + 자기표현(이모지·오라) + 크리에이터 생태계, 이 세 축이 무한한 수익 모델의 뿌리입니다.
+  </div>
+
+  <div class="footer"><span>Picto 수익화 플레이북 · 로드맵</span><span>11</span></div>
+</div>
+
+</body>
+</html>
