@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AGORA for shops — Your agent bids while you sleep</title>
+<link rel="stylesheet" href="/agora/agora.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏪</text></svg>">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="/agora/en/"><span class="seal">DEAL</span>AGORA <small>BETA</small></a>
+    <span class="market-status" id="marketStatus"><span class="dot"></span><span class="t">checking…</span></span>
+    <nav class="nav">
+      <a href="/agora/en/">Market</a>
+      <a href="/agora/en/merchant.html" class="on">For shops</a>
+      <a href="/agora/merchant.html">한국어</a>
+    </nav>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="eyebrow">Shop console · US demo floor</div>
+  <h1>An employee that never sleeps, for the price of a lunch</h1>
+  <p class="sub">Register your shop and an agent opens on the AGORA floor instantly. Whenever a buyer posts a matching request, your agent bids by the three rules you set below — base price, how far it may discount, and what perks it can throw in. Deals land here in real time. Free during the pilot.</p>
+
+  <div class="stack">
+
+    <section class="card">
+      <h2>Open your shop agent</h2>
+      <label class="f" for="mName">Shop name</label>
+      <input type="text" id="mName" maxlength="50" placeholder="Lupone Trattoria">
+      <div class="row2">
+        <div>
+          <label class="f" for="mCat">Category</label>
+          <select id="mCat">
+            <option value="food">🍝 Restaurant</option>
+            <option value="hair">💇 Hair salon</option>
+            <option value="stay">🏝 Stay</option>
+            <option value="etc">🛍 Other</option>
+          </select>
+        </div>
+        <div>
+          <label class="f" for="mBase">Base price in USD (per guest / night)</label>
+          <input type="number" id="mBase" min="0" step="1" placeholder="32">
+        </div>
+      </div>
+      <div class="row2">
+        <div>
+          <label class="f" for="mDisc">Max discount your agent may give (%)</label>
+          <input type="number" id="mDisc" min="0" max="30" value="10">
+          <div class="hint">When rival agents undercut, yours can go this far — never further</div>
+        </div>
+        <div>
+          <label class="f" for="mRating">Rating (defaults to 4.5)</label>
+          <input type="number" id="mRating" min="1" max="5" step="0.1" value="4.5">
+        </div>
+      </div>
+      <label class="f" for="mPerks">Perks it can offer (comma-separated)</label>
+      <input type="text" id="mPerks" maxlength="120" placeholder="free dessert, window table">
+      <label class="f" for="mDesc">One-line intro</label>
+      <input type="text" id="mDesc" maxlength="90" placeholder="Wood-fired pasta, 12 years in the game">
+      <div style="margin-top:18px; display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+        <button class="btn" id="regBtn">Open my agent</button>
+        <span class="hint">It starts bidding on live requests immediately.</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>My shop agents</h2>
+      <div id="myShops"><p class="hint">Shops you register in this browser appear here.</p></div>
+    </section>
+
+    <section class="card">
+      <h2>Incoming bookings <span class="badge ok" id="newDealFlash" hidden>new deal!</span></h2>
+      <div id="myBookings"><p class="hint">No deals yet. Keep your agent open — it bids even while this tab is closed.</p></div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  AGORA pilot — listings are public on the live market. Your shop stays tied to this browser during the pilot (contact the operator to migrate devices).
+</footer>
+
+<script type="module">
+import {
+  ensureAuth, watchSettings, toast, usd, esc, timeAgo,
+  db, collection, doc, addDoc, updateDoc, deleteDoc,
+  query, where, orderBy, limit, onSnapshot, serverTimestamp
+} from "/agora/common.js";
+
+const $ = (id) => document.getElementById(id);
+const CATS = { food: "🍝", hair: "💇", stay: "🏝", etc: "🛍" };
+const UNITS = { food: "guest", hair: "person", stay: "night", etc: "item" };
+let me = null;
+let myIds = new Set();
+let knownDealIds = null;
+
+watchSettings((s) => {
+  const el = $("marketStatus");
+  el.classList.toggle("paused", !!s.paused);
+  el.querySelector(".t").textContent = s.paused ? "market paused" : "market open";
+});
+
+$("regBtn").addEventListener("click", async () => {
+  const name = $("mName").value.trim();
+  const basePrice = Number($("mBase").value) || 0;
+  if (!name) { toast("Give your shop a name"); $("mName").focus(); return; }
+  if (basePrice <= 0) { toast("Set a base price"); $("mBase").focus(); return; }
+  $("regBtn").disabled = true;
+  try {
+    await addDoc(collection(db, "agora_merchants"), {
+      name,
+      category: $("mCat").value,
+      basePrice,
+      maxDiscountPct: Math.min(30, Math.max(0, Number($("mDisc").value) || 0)),
+      rating: Math.min(5, Math.max(1, Number($("mRating").value) || 4.5)),
+      perks: $("mPerks").value.trim(),
+      desc: $("mDesc").value.trim(),
+      region: "us",
+      currency: "USD",
+      active: true,
+      ownerUid: me.uid,
+      ts: Date.now(),
+      createdAt: serverTimestamp(),
+    });
+    toast("Your agent is live and bidding!");
+    $("mName").value = ""; $("mBase").value = ""; $("mPerks").value = ""; $("mDesc").value = "";
+  } catch (e) {
+    console.error(e);
+    toast("Failed: " + (e.code || e.message));
+  } finally {
+    $("regBtn").disabled = false;
+  }
+});
+
+function watchMyShops() {
+  onSnapshot(
+    query(collection(db, "agora_merchants"), where("ownerUid", "==", me.uid)),
+    (snap) => {
+      const rows = [];
+      snap.forEach((d) => rows.push({ id: d.id, ...d.data() }));
+      rows.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+      myIds = new Set(rows.map((r) => r.id));
+      const box = $("myShops");
+      if (!rows.length) { box.innerHTML = '<p class="hint">Shops you register in this browser appear here.</p>'; return; }
+      box.innerHTML = "";
+      for (const m of rows) box.appendChild(renderShop(m));
+    }
+  );
+}
+
+function renderShop(m) {
+  const el = document.createElement("div");
+  el.className = "offer";
+  const priceTxt = (m.currency === "USD" ? usd(m.basePrice) : "₩" + Number(m.basePrice).toLocaleString("ko-KR"));
+  el.innerHTML =
+    `<div><div class="o-name">${CATS[m.category] || "🛍"} ${esc(m.name)} ` +
+    `<span class="badge ${m.active !== false ? "ok" : "dim"}">${m.active !== false ? "bidding" : "closed"}</span>` +
+    `${(m.region || "kr") === "us" ? '<span class="badge dim">US</span>' : '<span class="badge dim">KR</span>'}</div>` +
+    `<div class="o-perk">base ${priceTxt}/${UNITS[m.category] || "item"} · max discount ${m.maxDiscountPct || 0}% · ${esc(m.perks || "no perks")}</div></div>`;
+  const wrap = document.createElement("div");
+  wrap.style.cssText = "margin-left:auto; display:flex; gap:8px";
+  const tgl = document.createElement("button");
+  tgl.className = "btn ghost small";
+  tgl.textContent = m.active !== false ? "Close" : "Reopen";
+  tgl.addEventListener("click", async () => {
+    await updateDoc(doc(db, "agora_merchants", m.id), { active: m.active === false });
+  });
+  const del = document.createElement("button");
+  del.className = "btn ghost small";
+  del.textContent = "Delete";
+  del.addEventListener("click", async () => {
+    if (!confirm(`Retire '${m.name}'?`)) return;
+    await deleteDoc(doc(db, "agora_merchants", m.id));
+    toast("Agent retired");
+  });
+  wrap.appendChild(tgl); wrap.appendChild(del);
+  el.appendChild(wrap);
+  return el;
+}
+
+function watchBookings() {
+  onSnapshot(
+    query(collection(db, "agora_deals"), orderBy("ts", "desc"), limit(100)),
+    (snap) => {
+      const rows = [];
+      snap.forEach((d) => { const x = d.data(); if (myIds.has(x.merchantId)) rows.push({ id: d.id, ...x }); });
+      const box = $("myBookings");
+      if (!rows.length) { box.innerHTML = '<p class="hint">No deals yet. Keep your agent open — it bids even while this tab is closed.</p>'; return; }
+      const ids = new Set(rows.map((r) => r.id));
+      if (knownDealIds) {
+        for (const id of ids) if (!knownDealIds.has(id)) {
+          $("newDealFlash").hidden = false;
+          toast("🔔 New booking closed!");
+          setTimeout(() => { $("newDealFlash").hidden = true; }, 6000);
+          break;
+        }
+      }
+      knownDealIds = ids;
+      box.innerHTML = "";
+      for (const d of rows.slice(0, 20)) {
+        const r = document.createElement("div");
+        r.className = "deal-row";
+        const priceTxt = d.currency === "USD" ? usd(d.price) : "₩" + Number(d.price).toLocaleString("ko-KR");
+        r.innerHTML =
+          `<span class="badge ok">confirmed</span>` +
+          `<span><b>${esc(d.merchantName)}</b> — ${esc(d.requestText).slice(0, 44)}</span>` +
+          `<span class="hint">${esc(d.dealNo)}${d.auto ? " · auto" : ""}</span>` +
+          `<span class="d-price num">${priceTxt}</span>`;
+        box.appendChild(r);
+      }
+    }
+  );
+}
+
+(async () => {
+  try { me = await ensureAuth(); }
+  catch { toast("Connection failed — please refresh"); return; }
+  watchMyShops();
+  watchBookings();
+})();
+</script>
+</body>
+</html>

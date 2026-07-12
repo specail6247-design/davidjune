@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AGORA 관제탑 — 시장 통제실</title>
+<link rel="stylesheet" href="/agora/agora.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗼</text></svg>">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="/agora/"><span class="seal">체결</span>AGORA <small>BETA</small></a>
+    <span class="market-status" id="marketStatus"><span class="dot"></span><span class="t">시장 확인 중…</span></span>
+    <nav class="nav">
+      <a href="/agora/">시장</a>
+      <a href="/agora/merchant.html">사장님</a>
+      <a href="/agora/admin.html" class="on">관제탑</a>
+      <a href="/agora/en/">EN</a>
+    </nav>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="eyebrow">운영자 전용</div>
+  <h1>관제탑 — AI 거래를 사람이 통제하는 곳</h1>
+  <p class="sub">시장에서 일어나는 모든 에이전트 거래를 실시간으로 보고, 한 번에 정지시키고, 자동승인 한도를 정합니다. 통제 권한은 운영자 계정에만 있습니다.</p>
+
+  <div class="notice" id="authNotice" style="margin-bottom:16px">
+    <b>운영자 인증 필요</b> — 통제 기능(정지·한도)은 운영자 구글 계정으로 로그인해야 저장됩니다.
+    <div style="margin-top:10px"><button class="btn small" id="loginBtn">구글로 로그인</button>
+    <button class="btn ghost small" id="logoutBtn" hidden>로그아웃</button>
+    <span class="hint" id="whoami"></span></div>
+  </div>
+
+  <div class="stack">
+
+    <section class="card">
+      <h2>시장 계기판 <button class="btn ghost small" id="refreshStats" style="margin-left:8px">새로고침</button></h2>
+      <div class="stats">
+        <div class="stat"><div class="n num" id="stMerchants">–</div><div class="l">입점 가게</div></div>
+        <div class="stat"><div class="n num" id="stRequests">–</div><div class="l">누적 요청</div></div>
+        <div class="stat"><div class="n num" id="stDeals">–</div><div class="l">누적 체결</div></div>
+        <div class="stat"><div class="n num" id="stGmv">–</div><div class="l">누적 거래액 (GMV)</div></div>
+        <div class="stat"><div class="n num" id="stFees">–</div><div class="l">수수료 수익 (2%)</div></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>시장 통제</h2>
+      <div class="grid2">
+        <div>
+          <label class="f">긴급 정지 (킬 스위치)</label>
+          <button class="btn danger" id="pauseBtn">⛔ 시장 전체 정지</button>
+          <button class="btn" id="resumeBtn" hidden>▶ 시장 재개</button>
+          <div class="hint">정지하면 진행 중인 협상이 즉시 중단되고 새 요청·체결이 막힙니다.</div>
+        </div>
+        <div>
+          <label class="f" for="limitInput">자동승인 한도 (원)</label>
+          <input type="number" id="limitInput" min="0" step="1000" placeholder="0 = 항상 사람이 승인">
+          <div class="hint">이 금액 이하의 최적 호가는 사람 승인 없이 자동 체결됩니다. 0이면 전부 수동.</div>
+          <button class="btn small" id="saveLimitBtn" style="margin-top:10px">한도 저장</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>브레인 모드 (베타) — 협상 대사를 진짜 AI가 생성</h2>
+      <p class="hint" style="margin-top:0">Anthropic API 키를 넣으면 이 브라우저에서 시작되는 협상의 대사를 Claude가 실시간 생성합니다. 키는 이 브라우저(localStorage)에만 저장되며 서버로 전송되지 않습니다. 비워두면 규칙 기반 대사로 동작합니다.</p>
+      <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <input type="password" id="llmKey" placeholder="sk-ant-..." style="flex:1; min-width:220px">
+        <button class="btn small" id="saveKeyBtn">저장</button>
+        <button class="btn ghost small" id="clearKeyBtn">삭제</button>
+      </div>
+      <div class="hint" id="llmStatus" style="margin-top:8px"></div>
+    </section>
+
+    <div class="grid2">
+      <section class="card">
+        <h2>실시간 요청 피드</h2>
+        <div id="reqFeed"><p class="hint">요청이 올라오면 실시간으로 표시됩니다.</p></div>
+      </section>
+      <section class="card">
+        <h2>실시간 체결 피드</h2>
+        <div id="dealFeed"><p class="hint">체결이 발생하면 실시간으로 표시됩니다.</p></div>
+      </section>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  관제탑은 공개 조회가 가능하지만, 통제(정지·한도·설정 저장)는 운영자 계정(specail6247@gmail.com)만 가능합니다 — 서버 보안 규칙으로 강제됩니다.
+</footer>
+
+<script type="module">
+import {
+  ensureAuth, watchAuth, googleSignIn, logout, bindMarketStatus, watchSettings, toast, won, esc, timeAgo, CATEGORIES, OPERATOR_EMAIL,
+  db, collection, doc, setDoc, getDocs, query, orderBy, limit, onSnapshot, serverTimestamp,
+  getCountFromServer
+} from "/agora/common.js";
+import { getLlmKey, setLlmKey } from "/agora/engine.js";
+
+const $ = (id) => document.getElementById(id);
+let settings = { paused: false, autoApproveLimit: 0 };
+let isOperator = false;
+
+bindMarketStatus($("marketStatus"));
+watchSettings((s) => {
+  settings = s;
+  $("pauseBtn").hidden = !!s.paused;
+  $("resumeBtn").hidden = !s.paused;
+  if (document.activeElement !== $("limitInput")) $("limitInput").value = s.autoApproveLimit || "";
+});
+
+// ── 인증 ──
+watchAuth((user) => {
+  const email = user?.email || "";
+  isOperator = email === OPERATOR_EMAIL;
+  $("whoami").textContent = email
+    ? (isOperator ? ` 운영자 인증됨: ${email}` : ` ${email} — 운영자 계정이 아닙니다 (조회만 가능)`)
+    : " 미인증 — 조회만 가능";
+  $("loginBtn").hidden = !!email;
+  $("logoutBtn").hidden = !email;
+  $("authNotice").classList.toggle("red", !!email && !isOperator);
+});
+$("loginBtn").addEventListener("click", async () => {
+  try { await googleSignIn(); } catch (e) { toast("로그인 실패: " + (e.code || e.message)); }
+});
+$("logoutBtn").addEventListener("click", () => logout());
+
+// ── 통제 ──
+async function saveSettings(patch) {
+  if (!isOperator) { toast("운영자 계정으로 로그인해야 합니다"); return false; }
+  try {
+    await setDoc(doc(db, "agora_settings", "market"), {
+      ...settings, ...patch, feePct: 2, operatorEmail: OPERATOR_EMAIL, updatedAt: serverTimestamp(),
+    }, { merge: true });
+    return true;
+  } catch (e) {
+    toast("저장 실패: " + (e.code || e.message));
+    return false;
+  }
+}
+$("pauseBtn").addEventListener("click", async () => {
+  if (await saveSettings({ paused: true })) toast("⛔ 시장을 정지했습니다");
+});
+$("resumeBtn").addEventListener("click", async () => {
+  if (await saveSettings({ paused: false })) toast("▶ 시장을 재개했습니다");
+});
+$("saveLimitBtn").addEventListener("click", async () => {
+  const v = Math.max(0, Number($("limitInput").value) || 0);
+  if (await saveSettings({ autoApproveLimit: v })) toast(v ? `자동승인 한도: ${won(v)}` : "전량 수동 승인으로 설정");
+});
+
+// ── 브레인 모드 키 ──
+function renderKeyStatus() {
+  const k = getLlmKey();
+  $("llmStatus").textContent = k
+    ? `브레인 모드 켜짐 — 키 저장됨 (${k.slice(0, 12)}…). 이 브라우저에서 요청을 올리면 Claude가 협상 대사를 생성합니다.`
+    : "브레인 모드 꺼짐 — 규칙 기반 대사로 동작 중.";
+}
+$("saveKeyBtn").addEventListener("click", () => {
+  const v = $("llmKey").value.trim();
+  if (!v) { toast("키를 입력하세요"); return; }
+  setLlmKey(v); $("llmKey").value = ""; renderKeyStatus(); toast("이 브라우저에 저장했습니다");
+});
+$("clearKeyBtn").addEventListener("click", () => { setLlmKey(""); renderKeyStatus(); toast("키를 삭제했습니다"); });
+renderKeyStatus();
+
+// ── 계기판 ──
+async function loadStats() {
+  try {
+    const [m, r, d] = await Promise.all([
+      getCountFromServer(collection(db, "agora_merchants")),
+      getCountFromServer(collection(db, "agora_requests")),
+      getCountFromServer(collection(db, "agora_deals")),
+    ]);
+    $("stMerchants").textContent = m.data().count.toLocaleString();
+    $("stRequests").textContent = r.data().count.toLocaleString();
+    $("stDeals").textContent = d.data().count.toLocaleString();
+    // 통화별 합계 (KRW 시장 + USD 데모 플로어) — 클라이언트 집계
+    const dealsSnap = await getDocs(query(collection(db, "agora_deals"), orderBy("ts", "desc"), limit(500)));
+    let gmvKrw = 0, gmvUsd = 0, feeKrw = 0, feeUsd = 0;
+    dealsSnap.forEach((d) => {
+      const x = d.data();
+      if (x.currency === "USD") { gmvUsd += x.price || 0; feeUsd += x.fee || 0; }
+      else { gmvKrw += x.price || 0; feeKrw += x.fee || 0; }
+    });
+    $("stGmv").textContent = won(gmvKrw) + (gmvUsd ? " + $" + gmvUsd.toLocaleString("en-US") : "");
+    $("stFees").textContent = won(feeKrw) + (feeUsd ? " + $" + feeUsd.toLocaleString("en-US") : "");
+  } catch (e) {
+    console.error(e);
+    toast("통계 로드 실패: " + (e.code || e.message));
+  }
+}
+$("refreshStats").addEventListener("click", loadStats);
+
+// ── 실시간 피드 ──
+const REQ_STATUS = {
+  open: ["대기", "dim"], negotiating: ["협상 중", "ok"], decided: ["승인 대기", "ok"],
+  closed: ["체결", "ok"], paused: ["정지됨", "warn"], empty: ["응찰 없음", "warn"],
+};
+function watchFeeds() {
+  onSnapshot(query(collection(db, "agora_requests"), orderBy("ts", "desc"), limit(12)), (snap) => {
+    const box = $("reqFeed");
+    if (snap.empty) { box.innerHTML = '<p class="hint">요청이 올라오면 실시간으로 표시됩니다.</p>'; return; }
+    box.innerHTML = "";
+    snap.forEach((docSnap) => {
+      const r = docSnap.data();
+      const [label, cls] = REQ_STATUS[r.status] || ["진행", "dim"];
+      const cat = CATEGORIES[r.category] || CATEGORIES.etc;
+      const row = document.createElement("div");
+      row.className = "deal-row";
+      row.innerHTML =
+        `<span class="badge ${cls}">${label}</span>` +
+        `<a href="./index.html?req=${docSnap.id}" style="color:inherit">${cat.emoji} ${esc(r.text).slice(0, 42)}</a>` +
+        `<span class="hint" style="margin-left:auto">${timeAgo(r.ts)}</span>`;
+      box.appendChild(row);
+    });
+  });
+  onSnapshot(query(collection(db, "agora_deals"), orderBy("ts", "desc"), limit(12)), (snap) => {
+    const box = $("dealFeed");
+    if (snap.empty) { box.innerHTML = '<p class="hint">체결이 발생하면 실시간으로 표시됩니다.</p>'; return; }
+    box.innerHTML = "";
+    snap.forEach((docSnap) => {
+      const d = docSnap.data();
+      const row = document.createElement("div");
+      row.className = "deal-row";
+      const m = (n) => d.currency === "USD" ? "$" + Number(n || 0).toLocaleString("en-US") : won(n);
+      row.innerHTML =
+        `<span class="badge ok">체결</span>` +
+        `<span><b>${esc(d.merchantName)}</b> <span class="hint">${esc(d.dealNo)}${d.auto ? " · 자동" : ""}${d.region === "us" ? " · US" : ""}</span></span>` +
+        `<span class="d-price num">${m(d.price)} <span class="hint">(수수료 ${m(d.fee)})</span></span>`;
+      box.appendChild(row);
+    });
+    loadStats();
+  });
+}
+
+(async () => {
+  try { await ensureAuth(); } catch { toast("연결 실패 — 새로고침 해주세요"); return; }
+  watchFeeds();
+  loadStats();
+})();
+</script>
+</body>
+</html>

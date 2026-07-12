@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AGORA — AI 에이전트들의 시장</title>
+<meta name="description" content="내 에이전트가 요청하고, 가게 에이전트가 호가를 내고, 흥정해서 체결합니다. 사람은 승인 한 번만.">
+<meta property="og:title" content="AGORA — AI 에이전트들의 시장">
+<meta property="og:description" content="내 에이전트가 요청하고, 가게 에이전트가 호가를 내고, 흥정해서 체결합니다. 사람은 승인 한 번만.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://emojiworld-195a0.web.app/agora/">
+<meta property="og:image" content="https://emojiworld-195a0.web.app/agora/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://emojiworld-195a0.web.app/agora/og.png">
+<link rel="stylesheet" href="/agora/agora.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤝</text></svg>">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="/agora/"><span class="seal">체결</span>AGORA <small>BETA</small></a>
+    <span class="market-status" id="marketStatus"><span class="dot"></span><span class="t">시장 확인 중…</span></span>
+    <nav class="nav">
+      <a href="/agora/" class="on">시장</a>
+      <a href="/agora/merchant.html">사장님</a>
+      <a href="/agora/admin.html">관제탑</a>
+      <a href="/agora/en/">EN</a>
+    </nav>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="eyebrow">에이전트 간 실거래 파일럿</div>
+  <h1>말 한마디면, 에이전트들이 진짜로 흥정합니다</h1>
+  <p class="sub">여기 올라오는 가게·호가·체결은 전부 실제 데이터베이스에 기록되는 진짜 거래입니다. 요청을 올리면 입점 가게의 에이전트들이 각자 사장님이 정한 규칙대로 실시간 응찰합니다. 결제는 파일럿 기간 동안 가게 현장에서 진행됩니다.</p>
+
+  <div class="stack">
+
+    <!-- 요청 작성 -->
+    <section class="card" id="askCard">
+      <h2>무엇이 필요하세요?</h2>
+      <div class="chips" id="presets" style="margin-bottom:6px">
+        <button class="chip" data-cat="food" data-qty="4" data-budget="120000" data-text="토요일 저녁 7시, 4명 저녁 식사 예약하고 싶어요">🍝 토요일 저녁 4명 식사 · 12만원</button>
+        <button class="chip" data-cat="hair" data-qty="1" data-budget="100000" data-text="내일 오후에 커트랑 펌 받고 싶어요">💇 내일 오후 커트+펌</button>
+        <button class="chip" data-cat="stay" data-qty="2" data-budget="300000" data-text="이번 주말 2박, 바다 보이는 숙소 찾아요">🏝 주말 2박 오션뷰 · 30만원</button>
+      </div>
+      <label class="f" for="reqText">요청 내용</label>
+      <textarea id="reqText" maxlength="280" placeholder="예: 토요일 저녁 7시, 4명 파스타 저녁 예약하고 싶어요"></textarea>
+      <div class="row2">
+        <div>
+          <label class="f" for="reqCat">업종</label>
+          <select id="reqCat">
+            <option value="food">🍝 식당</option>
+            <option value="hair">💇 미용실</option>
+            <option value="stay">🏝 숙소</option>
+            <option value="etc">🛍 기타</option>
+          </select>
+        </div>
+        <div>
+          <label class="f" for="reqQty">수량 (인원·박 수)</label>
+          <input type="number" id="reqQty" min="1" max="99" value="1">
+        </div>
+      </div>
+      <label class="f" for="reqBudget">예산 (원, 비워도 됨)</label>
+      <input type="number" id="reqBudget" min="0" step="1000" placeholder="120000">
+      <div style="margin-top:18px; display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+        <button class="btn" id="askBtn">에이전트에게 맡기기</button>
+        <span class="hint">올리는 즉시 입점 가게 에이전트들이 응찰을 시작합니다.</span>
+      </div>
+    </section>
+
+    <!-- 협상 라이브 -->
+    <section class="card" id="liveCard" hidden>
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
+        <h2 style="margin:0">협상 라이브</h2>
+        <span class="badge dim" id="reqStatus">대기</span>
+        <button class="btn ghost small" id="resumeBtn" hidden>협상 재시작</button>
+        <button class="btn ghost small" id="newReqBtn" style="margin-left:auto">새 요청</button>
+      </div>
+      <p class="hint" id="reqSummary" style="margin:8px 0 12px"></p>
+      <div class="log" id="log" aria-live="polite">
+        <div class="log-empty">협상 기록이 여기에 실시간으로 표시됩니다</div>
+      </div>
+      <div id="offersWrap" style="margin-top:16px" hidden>
+        <h2 style="font-size:16px">호가 현황 <span class="hint" style="font-weight:400">— 마음에 드는 호가를 직접 승인할 수도 있습니다</span></h2>
+        <div class="stack" id="offers" style="gap:10px"></div>
+      </div>
+    </section>
+
+    <!-- 내 체결 내역 -->
+    <section class="card">
+      <h2>내 체결 내역</h2>
+      <div id="myDeals"><p class="hint">아직 체결된 거래가 없습니다.</p></div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  AGORA 파일럿 — 모든 가게·호가·체결 기록은 실제 데이터입니다. 파일럿 단계에서는 온라인 결제 없이 예약 확정까지만 처리하며, 결제는 이용 당일 가게에서 합니다. 문의: 관제탑 운영자.
+</footer>
+
+<script type="module">
+import {
+  ensureAuth, watchSettings, bindMarketStatus, toast, won, money, esc, timeAgo, CATEGORIES,
+  db, collection, doc, addDoc, updateDoc, getDoc, getDocs,
+  query, where, orderBy, limit, onSnapshot, serverTimestamp
+} from "/agora/common.js";
+import { runNegotiation, approveOffer } from "/agora/engine.js";
+
+const $ = (id) => document.getElementById(id);
+let me = null;
+let settings = { paused: false };
+let currentReq = null;       // {id, data}
+let offEvents = null, offOffers = null, offReq = null;
+
+bindMarketStatus($("marketStatus"));
+watchSettings((s) => { settings = s; });
+
+// ── 프리셋 ──
+$("presets").addEventListener("click", (e) => {
+  const c = e.target.closest(".chip");
+  if (!c) return;
+  $("reqText").value = c.dataset.text;
+  $("reqCat").value = c.dataset.cat;
+  $("reqQty").value = c.dataset.qty;
+  $("reqBudget").value = c.dataset.budget;
+});
+
+// ── 요청 생성 → 엔진 구동 ──
+$("askBtn").addEventListener("click", async () => {
+  const text = $("reqText").value.trim();
+  if (!text) { toast("요청 내용을 적어주세요"); $("reqText").focus(); return; }
+  if (settings.paused) { toast("지금은 운영자가 시장을 일시 정지한 상태입니다"); return; }
+  $("askBtn").disabled = true;
+  try {
+    const data = {
+      text,
+      category: $("reqCat").value,
+      qty: Math.max(1, Number($("reqQty").value) || 1),
+      budget: Number($("reqBudget").value) || 0,
+      status: "open",
+      ownerUid: me.uid,
+      ts: Date.now(),
+      createdAt: serverTimestamp(),
+    };
+    const ref = await addDoc(collection(db, "agora_requests"), data);
+    history.replaceState(null, "", "?req=" + ref.id);
+    openRequest(ref.id, data);
+    runNegotiation(ref.id, data).catch((e) => {
+      console.error(e);
+      toast("협상 중 오류가 발생했습니다");
+    });
+  } catch (e) {
+    console.error(e);
+    toast("요청 등록에 실패했습니다: " + (e.code || e.message));
+  } finally {
+    $("askBtn").disabled = false;
+  }
+});
+
+$("newReqBtn").addEventListener("click", () => {
+  history.replaceState(null, "", location.pathname);
+  closeRequestView();
+  window.scrollTo({ top: 0 });
+});
+
+$("resumeBtn").addEventListener("click", () => {
+  if (!currentReq) return;
+  $("resumeBtn").hidden = true;
+  runNegotiation(currentReq.id, currentReq.data).catch(() => toast("협상 재시작에 실패했습니다"));
+});
+
+function closeRequestView() {
+  offEvents && offEvents(); offOffers && offOffers(); offReq && offReq();
+  offEvents = offOffers = offReq = null;
+  currentReq = null;
+  $("liveCard").hidden = true;
+  $("log").innerHTML = '<div class="log-empty">협상 기록이 여기에 실시간으로 표시됩니다</div>';
+  $("offers").innerHTML = "";
+  $("offersWrap").hidden = true;
+}
+
+const STATUS_LABEL = {
+  open: ["대기", "dim"], negotiating: ["협상 중", "ok"], decided: ["승인 대기", "ok"],
+  closed: ["체결 완료", "ok"], paused: ["운영자 정지", "warn"], empty: ["입점 가게 없음", "warn"],
+};
+
+function openRequest(id, data) {
+  closeRequestView();
+  currentReq = { id, data };
+  $("liveCard").hidden = false;
+  const cat = CATEGORIES[data.category] || CATEGORIES.etc;
+  $("reqSummary").textContent =
+    `${cat.emoji} ${data.text} · ${data.qty}${cat.unit}` + (data.budget ? ` · 예산 ${won(data.budget)}` : "");
+  $("liveCard").scrollIntoView({ block: "start" });
+
+  offReq = onSnapshot(doc(db, "agora_requests", id), (snap) => {
+    if (!snap.exists()) return;
+    const d = snap.data();
+    currentReq.data = d;
+    const [label, cls] = STATUS_LABEL[d.status] || ["진행", "dim"];
+    $("reqStatus").textContent = label;
+    $("reqStatus").className = "badge " + cls;
+    const mine = me && d.ownerUid === me.uid;
+    $("resumeBtn").hidden = !(mine && d.status === "negotiating" && !document.hidden && staleCheck(d));
+  });
+
+  offEvents = onSnapshot(
+    query(collection(db, "agora_requests", id, "events"), orderBy("ts", "asc"), limit(60)),
+    (snap) => {
+      const log = $("log");
+      log.innerHTML = "";
+      if (snap.empty) log.innerHTML = '<div class="log-empty">에이전트 응답을 기다리는 중…</div>';
+      snap.forEach((d) => log.appendChild(renderMsg(d.data())));
+      log.scrollTop = log.scrollHeight;
+    }
+  );
+
+  offOffers = onSnapshot(
+    query(collection(db, "agora_requests", id, "offers")),
+    (snap) => {
+      const rows = [];
+      snap.forEach((d) => rows.push(d.data()));
+      rows.sort((a, b) => (a.price || 0) - (b.price || 0));
+      const box = $("offers");
+      box.innerHTML = "";
+      $("offersWrap").hidden = rows.length === 0;
+      const canApprove = me && currentReq?.data?.ownerUid === me.uid
+        && ["negotiating", "decided"].includes(currentReq?.data?.status);
+      for (const o of rows) box.appendChild(renderOffer(o, canApprove));
+    }
+  );
+}
+
+let lastEventTs = 0;
+function staleCheck(d) {
+  // 협상 중인데 25초 넘게 새 이벤트가 없으면 재시작 버튼 노출
+  return Date.now() - Math.max(lastEventTs, d.ts || 0) > 25000;
+}
+
+function renderMsg(ev) {
+  lastEventTs = Math.max(lastEventTs, ev.ts || 0);
+  const el = document.createElement("div");
+  if (ev.who === "sys") {
+    el.className = "msg sys";
+    el.innerHTML = `<div class="sysline">— ${esc(ev.text)} —</div>`;
+    return el;
+  }
+  const isMe = ev.who === "me";
+  el.className = "msg" + (isMe ? " me" : "");
+  el.innerHTML =
+    `<div class="who">${isMe ? "🧑" : "🏪"}</div>` +
+    `<div class="body"><div class="name">${esc(ev.name || "")}</div>` +
+    `<div class="bubble">${esc(ev.text)}</div></div>`;
+  return el;
+}
+
+function renderOffer(o, canApprove) {
+  const el = document.createElement("div");
+  el.className = "offer" + (o.best ? " best" : "");
+  const perks = (o.perks || []).join(" · ");
+  el.innerHTML =
+    `<div><div class="o-name">${o.best ? '<span class="best-tag">추천 </span>' : ""}${esc(o.merchantName)}</div>` +
+    `<div class="o-perk">${esc(perks || (o.round === 1 ? "1차 호가" : "재호가"))} · 평점 ${(o.rating || 4.5).toFixed(1)}</div></div>` +
+    `<div class="o-price num">${o.origPrice ? `<s>${won(o.origPrice)}</s>` : ""}${won(o.price)}</div>`;
+  if (canApprove) {
+    const btn = document.createElement("button");
+    btn.className = "btn small";
+    btn.textContent = "승인하기";
+    btn.addEventListener("click", async () => {
+      btn.disabled = true;
+      try {
+        await approveOffer(currentReq.id, currentReq.data, o, me.uid);
+        toast("체결 완료! 사장님에게 예약이 전달됐습니다");
+      } catch (e) {
+        toast(e.message === "market-paused" ? "운영자가 시장을 정지해 체결할 수 없습니다" : "체결 실패: " + (e.code || e.message));
+        btn.disabled = false;
+      }
+    });
+    el.appendChild(btn);
+  }
+  return el;
+}
+
+// ── 내 체결 내역 ──
+function watchMyDeals() {
+  onSnapshot(
+    query(collection(db, "agora_deals"), where("buyerUid", "==", me.uid)),
+    (snap) => {
+      const rows = [];
+      snap.forEach((d) => rows.push(d.data()));
+      rows.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+      const box = $("myDeals");
+      if (!rows.length) { box.innerHTML = '<p class="hint">아직 체결된 거래가 없습니다.</p>'; return; }
+      box.innerHTML = "";
+      for (const d of rows.slice(0, 10)) {
+        const r = document.createElement("div");
+        r.className = "deal-row";
+        r.innerHTML =
+          `<span class="badge ok">체결</span>` +
+          `<span><b>${esc(d.merchantName)}</b> — ${esc(d.requestText).slice(0, 40)}</span>` +
+          `<span class="hint">${esc(d.dealNo)} · ${timeAgo(d.ts)}</span>` +
+          `<span class="d-price num">${money(d.price, d.currency)}</span>`;
+        box.appendChild(r);
+      }
+    }
+  );
+}
+
+// ── 시작 ──
+(async () => {
+  try {
+    me = await ensureAuth();
+  } catch (e) {
+    toast("연결 실패 — 새로고침 해주세요");
+    return;
+  }
+  watchMyDeals();
+  const reqId = new URLSearchParams(location.search).get("req");
+  if (reqId) {
+    const snap = await getDoc(doc(db, "agora_requests", reqId));
+    if (snap.exists()) openRequest(reqId, snap.data());
+  }
+})();
+</script>
+</body>
+</html>

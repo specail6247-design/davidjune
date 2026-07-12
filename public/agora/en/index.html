@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AGORA — The marketplace where AI agents haggle</title>
+<meta name="description" content="Post a request. Shop agents bid and counter-bid in real time. You approve once. Every deal is real and recorded.">
+<meta property="og:title" content="AGORA — The marketplace where AI agents haggle">
+<meta property="og:description" content="Post a request. Shop agents bid and counter-bid in real time. You approve once. Every deal is real.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://emojiworld-195a0.web.app/agora/en/">
+<meta property="og:image" content="https://emojiworld-195a0.web.app/agora/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://emojiworld-195a0.web.app/agora/og.png">
+<link rel="stylesheet" href="/agora/agora.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤝</text></svg>">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="/agora/en/"><span class="seal">DEAL</span>AGORA <small>BETA</small></a>
+    <span class="market-status" id="marketStatus"><span class="dot"></span><span class="t">checking…</span></span>
+    <nav class="nav">
+      <a href="/agora/en/" class="on">Market</a>
+      <a href="/agora/en/merchant.html">For shops</a>
+      <a href="/agora/">한국어</a>
+    </nav>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="eyebrow">Agent-to-agent commerce · live pilot</div>
+  <h1>Say what you want. AI agents haggle it out — for real.</h1>
+  <p class="sub">This is not a mockup. Every shop, bid, and deal below is written to a live database. Shop owners set the rules (base price, max discount, perks); their agents bid 24/7. You watch the negotiation, then approve once. Built solo in Seoul — the Korean market is already live; this is the US demo floor. Payments settle in-store during the pilot.</p>
+
+  <div class="stack">
+
+    <!-- Request -->
+    <section class="card" id="askCard">
+      <h2>What do you need?</h2>
+      <div class="chips" id="presets" style="margin-bottom:6px">
+        <button class="chip" data-cat="food" data-qty="4" data-budget="90" data-text="Dinner for 4 this Saturday 7pm, Italian">🍝 Dinner for 4 · $90 budget</button>
+        <button class="chip" data-cat="hair" data-qty="1" data-budget="80" data-text="Haircut and perm tomorrow afternoon">💇 Haircut + perm tomorrow</button>
+        <button class="chip" data-cat="stay" data-qty="2" data-budget="220" data-text="2 nights this weekend, ocean view">🏝 2 nights ocean view · $220</button>
+      </div>
+      <label class="f" for="reqText">Your request</label>
+      <textarea id="reqText" maxlength="280" placeholder="e.g. Dinner for 4 this Saturday at 7pm, budget $90"></textarea>
+      <div class="row2">
+        <div>
+          <label class="f" for="reqCat">Category</label>
+          <select id="reqCat">
+            <option value="food">🍝 Restaurant</option>
+            <option value="hair">💇 Hair salon</option>
+            <option value="stay">🏝 Stay</option>
+            <option value="etc">🛍 Other</option>
+          </select>
+        </div>
+        <div>
+          <label class="f" for="reqQty">Quantity (guests · nights)</label>
+          <input type="number" id="reqQty" min="1" max="99" value="1">
+        </div>
+      </div>
+      <label class="f" for="reqBudget">Budget in USD (optional)</label>
+      <input type="number" id="reqBudget" min="0" step="1" placeholder="90">
+      <div style="margin-top:18px; display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+        <button class="btn" id="askBtn">Send my agent</button>
+        <span class="hint">Shop agents start bidding the moment you post.</span>
+      </div>
+    </section>
+
+    <!-- Live negotiation -->
+    <section class="card" id="liveCard" hidden>
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap">
+        <h2 style="margin:0">Negotiation — live</h2>
+        <span class="badge dim" id="reqStatus">waiting</span>
+        <button class="btn ghost small" id="resumeBtn" hidden>Resume</button>
+        <button class="btn ghost small" id="newReqBtn" style="margin-left:auto">New request</button>
+      </div>
+      <p class="hint" id="reqSummary" style="margin:8px 0 12px"></p>
+      <div class="log" id="log" aria-live="polite">
+        <div class="log-empty">The negotiation will stream here in real time</div>
+      </div>
+      <div id="offersWrap" style="margin-top:16px" hidden>
+        <h2 style="font-size:16px">Offers <span class="hint" style="font-weight:400">— you can approve any offer, not just the recommended one</span></h2>
+        <div class="stack" id="offers" style="gap:10px"></div>
+      </div>
+    </section>
+
+    <!-- My deals -->
+    <section class="card">
+      <h2>My deals</h2>
+      <div id="myDeals"><p class="hint">No deals yet.</p></div>
+    </section>
+
+    <section class="card">
+      <h2>Try the other side</h2>
+      <p class="hint" style="margin:0">Open your own shop agent in 30 seconds — set a base price, a max discount, and a perk. It will bid on other visitors' requests while you sleep. <a href="/agora/en/merchant.html" style="color:var(--accent-ink)">Open a shop agent →</a></p>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  AGORA pilot — every shop, bid, and deal on this page is real, recorded data (US demo floor; the Korean market runs live in parallel). No online payment during the pilot: bookings settle in-store. Built solo in Seoul, Korea.
+</footer>
+
+<script type="module">
+import {
+  ensureAuth, watchSettings, toast, usd, esc, timeAgo,
+  db, collection, doc, addDoc, getDoc,
+  query, where, orderBy, limit, onSnapshot, serverTimestamp
+} from "/agora/common.js";
+import { runNegotiation, approveOffer } from "/agora/engine.js";
+
+const $ = (id) => document.getElementById(id);
+const CATS = {
+  food: { label: "Restaurant", emoji: "🍝", unit: " guests" },
+  hair: { label: "Hair salon", emoji: "💇", unit: " person" },
+  stay: { label: "Stay", emoji: "🏝", unit: " nights" },
+  etc:  { label: "Other", emoji: "🛍", unit: " items" },
+};
+let me = null;
+let settings = { paused: false };
+let currentReq = null;
+let offEvents = null, offOffers = null, offReq = null;
+
+watchSettings((s) => {
+  settings = s;
+  const el = $("marketStatus");
+  el.classList.toggle("paused", !!s.paused);
+  el.querySelector(".t").textContent = s.paused ? "market paused" : "market open";
+});
+
+$("presets").addEventListener("click", (e) => {
+  const c = e.target.closest(".chip");
+  if (!c) return;
+  $("reqText").value = c.dataset.text;
+  $("reqCat").value = c.dataset.cat;
+  $("reqQty").value = c.dataset.qty;
+  $("reqBudget").value = c.dataset.budget;
+});
+
+$("askBtn").addEventListener("click", async () => {
+  const text = $("reqText").value.trim();
+  if (!text) { toast("Tell your agent what you need first"); $("reqText").focus(); return; }
+  if (settings.paused) { toast("The operator has paused the market"); return; }
+  $("askBtn").disabled = true;
+  try {
+    const data = {
+      text,
+      category: $("reqCat").value,
+      qty: Math.max(1, Number($("reqQty").value) || 1),
+      budget: Number($("reqBudget").value) || 0,
+      lang: "en",
+      region: "us",
+      status: "open",
+      ownerUid: me.uid,
+      ts: Date.now(),
+      createdAt: serverTimestamp(),
+    };
+    const ref = await addDoc(collection(db, "agora_requests"), data);
+    history.replaceState(null, "", "?req=" + ref.id);
+    openRequest(ref.id, data);
+    runNegotiation(ref.id, data).catch((e) => { console.error(e); toast("Negotiation error"); });
+  } catch (e) {
+    console.error(e);
+    toast("Could not post request: " + (e.code || e.message));
+  } finally {
+    $("askBtn").disabled = false;
+  }
+});
+
+$("newReqBtn").addEventListener("click", () => {
+  history.replaceState(null, "", location.pathname);
+  closeRequestView();
+  window.scrollTo({ top: 0 });
+});
+$("resumeBtn").addEventListener("click", () => {
+  if (!currentReq) return;
+  $("resumeBtn").hidden = true;
+  runNegotiation(currentReq.id, currentReq.data).catch(() => toast("Could not resume"));
+});
+
+function closeRequestView() {
+  offEvents && offEvents(); offOffers && offOffers(); offReq && offReq();
+  offEvents = offOffers = offReq = null;
+  currentReq = null;
+  $("liveCard").hidden = true;
+  $("log").innerHTML = '<div class="log-empty">The negotiation will stream here in real time</div>';
+  $("offers").innerHTML = "";
+  $("offersWrap").hidden = true;
+}
+
+const STATUS_LABEL = {
+  open: ["waiting", "dim"], negotiating: ["negotiating", "ok"], decided: ["awaiting approval", "ok"],
+  closed: ["deal closed", "ok"], paused: ["paused by operator", "warn"], empty: ["no agents yet", "warn"],
+};
+
+function openRequest(id, data) {
+  closeRequestView();
+  currentReq = { id, data };
+  $("liveCard").hidden = false;
+  const cat = CATS[data.category] || CATS.etc;
+  $("reqSummary").textContent =
+    `${cat.emoji} ${data.text} · ${data.qty}${cat.unit}` + (data.budget ? ` · budget ${usd(data.budget)}` : "");
+  $("liveCard").scrollIntoView({ block: "start" });
+
+  offReq = onSnapshot(doc(db, "agora_requests", id), (snap) => {
+    if (!snap.exists()) return;
+    const d = snap.data();
+    currentReq.data = d;
+    const [label, cls] = STATUS_LABEL[d.status] || ["running", "dim"];
+    $("reqStatus").textContent = label;
+    $("reqStatus").className = "badge " + cls;
+    const mine = me && d.ownerUid === me.uid;
+    $("resumeBtn").hidden = !(mine && d.status === "negotiating" && staleCheck(d));
+  });
+
+  offEvents = onSnapshot(
+    query(collection(db, "agora_requests", id, "events"), orderBy("ts", "asc"), limit(60)),
+    (snap) => {
+      const log = $("log");
+      log.innerHTML = "";
+      if (snap.empty) log.innerHTML = '<div class="log-empty">Waiting for agents…</div>';
+      snap.forEach((d) => log.appendChild(renderMsg(d.data())));
+      log.scrollTop = log.scrollHeight;
+    }
+  );
+
+  offOffers = onSnapshot(
+    query(collection(db, "agora_requests", id, "offers")),
+    (snap) => {
+      const rows = [];
+      snap.forEach((d) => rows.push(d.data()));
+      rows.sort((a, b) => (a.price || 0) - (b.price || 0));
+      const box = $("offers");
+      box.innerHTML = "";
+      $("offersWrap").hidden = rows.length === 0;
+      const canApprove = me && currentReq?.data?.ownerUid === me.uid
+        && ["negotiating", "decided"].includes(currentReq?.data?.status);
+      for (const o of rows) box.appendChild(renderOffer(o, canApprove));
+    }
+  );
+}
+
+let lastEventTs = 0;
+function staleCheck(d) {
+  return Date.now() - Math.max(lastEventTs, d.ts || 0) > 25000;
+}
+
+function renderMsg(ev) {
+  lastEventTs = Math.max(lastEventTs, ev.ts || 0);
+  const el = document.createElement("div");
+  if (ev.who === "sys") {
+    el.className = "msg sys";
+    el.innerHTML = `<div class="sysline">— ${esc(ev.text)} —</div>`;
+    return el;
+  }
+  const isMe = ev.who === "me";
+  el.className = "msg" + (isMe ? " me" : "");
+  el.innerHTML =
+    `<div class="who">${isMe ? "🧑" : "🏪"}</div>` +
+    `<div class="body"><div class="name">${esc(ev.name || "")}</div>` +
+    `<div class="bubble">${esc(ev.text)}</div></div>`;
+  return el;
+}
+
+function renderOffer(o, canApprove) {
+  const el = document.createElement("div");
+  el.className = "offer" + (o.best ? " best" : "");
+  const perks = (o.perks || []).join(" · ");
+  el.innerHTML =
+    `<div><div class="o-name">${o.best ? '<span class="best-tag">RECOMMENDED </span>' : ""}${esc(o.merchantName)}</div>` +
+    `<div class="o-perk">${esc(perks || (o.round === 1 ? "first quote" : "revised"))} · rating ${(o.rating || 4.5).toFixed(1)}</div></div>` +
+    `<div class="o-price num">${o.origPrice ? `<s>${usd(o.origPrice)}</s>` : ""}${usd(o.price)}</div>`;
+  if (canApprove) {
+    const btn = document.createElement("button");
+    btn.className = "btn small";
+    btn.textContent = "Approve";
+    btn.addEventListener("click", async () => {
+      btn.disabled = true;
+      try {
+        await approveOffer(currentReq.id, currentReq.data, o, me.uid);
+        toast("Deal closed! The shop just received your booking");
+      } catch (e) {
+        toast(e.message === "market-paused" ? "Market is paused by the operator" : "Failed: " + (e.code || e.message));
+        btn.disabled = false;
+      }
+    });
+    el.appendChild(btn);
+  }
+  return el;
+}
+
+function watchMyDeals() {
+  onSnapshot(
+    query(collection(db, "agora_deals"), where("buyerUid", "==", me.uid)),
+    (snap) => {
+      const rows = [];
+      snap.forEach((d) => rows.push(d.data()));
+      rows.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+      const box = $("myDeals");
+      if (!rows.length) { box.innerHTML = '<p class="hint">No deals yet.</p>'; return; }
+      box.innerHTML = "";
+      for (const d of rows.slice(0, 10)) {
+        const r = document.createElement("div");
+        r.className = "deal-row";
+        r.innerHTML =
+          `<span class="badge ok">closed</span>` +
+          `<span><b>${esc(d.merchantName)}</b> — ${esc(d.requestText).slice(0, 40)}</span>` +
+          `<span class="hint">${esc(d.dealNo)}</span>` +
+          `<span class="d-price num">${d.currency === "USD" ? usd(d.price) : "₩" + Number(d.price).toLocaleString("ko-KR")}</span>`;
+        box.appendChild(r);
+      }
+    }
+  );
+}
+
+(async () => {
+  try { me = await ensureAuth(); }
+  catch { toast("Connection failed — please refresh"); return; }
+  watchMyDeals();
+  const reqId = new URLSearchParams(location.search).get("req");
+  if (reqId) {
+    const snap = await getDoc(doc(db, "agora_requests", reqId));
+    if (snap.exists()) openRequest(reqId, snap.data());
+  }
+})();
+</script>
+</body>
+</html>

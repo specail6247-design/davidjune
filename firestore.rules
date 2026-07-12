@@ -169,5 +169,65 @@ service cloud.firestore {
     match /post_rejections/{docId} {
       allow read, write: if false;
     }
+
+    // ---- AGORA 에이전트 마켓 ----
+    function isAgoraOperator() {
+      return signedIn() && request.auth.token.email == 'specail6247@gmail.com';
+    }
+
+    match /agora_merchants/{merchantId} {
+      allow read: if true;
+      allow create: if signedIn()
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() < 60
+        && request.resource.data.basePrice is number
+        && request.resource.data.basePrice >= 0
+        && request.resource.data.basePrice <= 100000000;
+      allow update, delete: if signedIn()
+        && (resource.data.ownerUid == request.auth.uid || isAgoraOperator());
+    }
+
+    match /agora_requests/{requestId} {
+      allow read: if true;
+      allow create: if signedIn()
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() < 300;
+      allow update: if signedIn()
+        && (resource.data.ownerUid == request.auth.uid || isAgoraOperator());
+      allow delete: if isAgoraOperator();
+
+      match /events/{eventId} {
+        allow read: if true;
+        allow create: if signedIn()
+          && request.resource.data.text is string
+          && request.resource.data.text.size() < 500;
+        allow update, delete: if false;
+      }
+
+      match /offers/{offerId} {
+        allow read: if true;
+        allow create, update: if signedIn();
+        allow delete: if false;
+      }
+    }
+
+    match /agora_deals/{dealId} {
+      allow read: if true;
+      allow create: if signedIn()
+        && request.resource.data.buyerUid == request.auth.uid
+        && request.resource.data.price is number
+        && request.resource.data.price >= 0
+        && request.resource.data.price <= 100000000;
+      allow update, delete: if isAgoraOperator();
+    }
+
+    match /agora_settings/{docId} {
+      allow read: if true;
+      allow write: if isAgoraOperator();
+    }
   }
 }

@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AGORA 사장님 콘솔 — 내 가게 에이전트</title>
+<link rel="stylesheet" href="/agora/agora.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏪</text></svg>">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="/agora/"><span class="seal">체결</span>AGORA <small>BETA</small></a>
+    <span class="market-status" id="marketStatus"><span class="dot"></span><span class="t">시장 확인 중…</span></span>
+    <nav class="nav">
+      <a href="/agora/">시장</a>
+      <a href="/agora/merchant.html" class="on">사장님</a>
+      <a href="/agora/admin.html">관제탑</a>
+      <a href="/agora/en/merchant.html">EN</a>
+    </nav>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="eyebrow">사장님 콘솔</div>
+  <h1>월 5만원짜리 직원 대신, 잠들지 않는 에이전트</h1>
+  <p class="sub">가게를 등록하면 즉시 AGORA 시장에 에이전트가 개점합니다. 손님 요청이 올라올 때마다 아래에 설정한 규칙(기준가·최대 할인·서비스)대로 에이전트가 알아서 응찰하고, 체결되면 이 화면에 실시간으로 예약이 도착합니다. 파일럿 기간엔 전부 무료입니다.</p>
+
+  <div class="stack">
+
+    <section class="card">
+      <h2>새 가게 등록</h2>
+      <label class="f" for="mName">가게 이름</label>
+      <input type="text" id="mName" maxlength="50" placeholder="루포네 이탈리안 다이닝">
+      <div class="row2">
+        <div>
+          <label class="f" for="mCat">업종</label>
+          <select id="mCat">
+            <option value="food">🍝 식당</option>
+            <option value="hair">💇 미용실</option>
+            <option value="stay">🏝 숙소</option>
+            <option value="etc">🛍 기타</option>
+          </select>
+        </div>
+        <div>
+          <label class="f" for="mBase">기준가 (원 · 1인/1박당)</label>
+          <input type="number" id="mBase" min="0" step="1000" placeholder="32000">
+        </div>
+      </div>
+      <div class="row2">
+        <div>
+          <label class="f" for="mDisc">에이전트 최대 할인 허용 (%)</label>
+          <input type="number" id="mDisc" min="0" max="30" value="10">
+          <div class="hint">경쟁 호가가 붙으면 이 한도 안에서 알아서 조정합니다</div>
+        </div>
+        <div>
+          <label class="f" for="mRating">평점 (없으면 4.5)</label>
+          <input type="number" id="mRating" min="1" max="5" step="0.1" value="4.5">
+        </div>
+      </div>
+      <label class="f" for="mPerks">서비스 무기 (쉼표로 구분)</label>
+      <input type="text" id="mPerks" maxlength="120" placeholder="디저트 서비스, 창가석 우선 배정">
+      <label class="f" for="mDesc">한 줄 소개</label>
+      <input type="text" id="mDesc" maxlength="90" placeholder="연남동 12년차 화덕 파스타집">
+      <div style="margin-top:18px; display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+        <button class="btn" id="regBtn">에이전트 개점하기</button>
+        <span class="hint">등록 즉시 시장 응찰이 시작됩니다.</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>내 가게 에이전트</h2>
+      <div id="myShops"><p class="hint">이 브라우저로 등록한 가게가 여기에 표시됩니다.</p></div>
+    </section>
+
+    <section class="card">
+      <h2>들어온 예약 (체결) <span class="badge ok" id="newDealFlash" hidden>새 체결!</span></h2>
+      <div id="myBookings"><p class="hint">아직 체결이 없습니다. 가게를 등록해 두면 손님 요청에 자동 응찰합니다.</p></div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  파일럿 안내 — 등록 정보는 실제 시장에 공개됩니다. 같은 브라우저에서 다시 접속하면 내 가게가 유지됩니다(기기를 바꾸실 계획이면 운영자에게 문의).
+</footer>
+
+<script type="module">
+import {
+  ensureAuth, bindMarketStatus, toast, won, money, esc, timeAgo, CATEGORIES,
+  db, collection, doc, addDoc, updateDoc, deleteDoc,
+  query, where, orderBy, limit, onSnapshot, serverTimestamp
+} from "/agora/common.js";
+
+const $ = (id) => document.getElementById(id);
+let me = null;
+let myIds = new Set();
+let knownDealIds = null;
+
+bindMarketStatus($("marketStatus"));
+
+$("regBtn").addEventListener("click", async () => {
+  const name = $("mName").value.trim();
+  const basePrice = Number($("mBase").value) || 0;
+  if (!name) { toast("가게 이름을 입력해주세요"); $("mName").focus(); return; }
+  if (basePrice <= 0) { toast("기준가를 입력해주세요"); $("mBase").focus(); return; }
+  $("regBtn").disabled = true;
+  try {
+    await addDoc(collection(db, "agora_merchants"), {
+      name,
+      category: $("mCat").value,
+      basePrice,
+      maxDiscountPct: Math.min(30, Math.max(0, Number($("mDisc").value) || 0)),
+      rating: Math.min(5, Math.max(1, Number($("mRating").value) || 4.5)),
+      perks: $("mPerks").value.trim(),
+      desc: $("mDesc").value.trim(),
+      active: true,
+      ownerUid: me.uid,
+      ts: Date.now(),
+      createdAt: serverTimestamp(),
+    });
+    toast("에이전트 개점 완료! 이제 손님 요청에 자동 응찰합니다");
+    $("mName").value = ""; $("mBase").value = ""; $("mPerks").value = ""; $("mDesc").value = "";
+  } catch (e) {
+    console.error(e);
+    toast("등록 실패: " + (e.code || e.message));
+  } finally {
+    $("regBtn").disabled = false;
+  }
+});
+
+function watchMyShops() {
+  onSnapshot(
+    query(collection(db, "agora_merchants"), where("ownerUid", "==", me.uid)),
+    (snap) => {
+      const rows = [];
+      snap.forEach((d) => rows.push({ id: d.id, ...d.data() }));
+      rows.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+      myIds = new Set(rows.map((r) => r.id));
+      const box = $("myShops");
+      if (!rows.length) { box.innerHTML = '<p class="hint">이 브라우저로 등록한 가게가 여기에 표시됩니다.</p>'; return; }
+      box.innerHTML = "";
+      for (const m of rows) box.appendChild(renderShop(m));
+    }
+  );
+}
+
+function renderShop(m) {
+  const cat = CATEGORIES[m.category] || CATEGORIES.etc;
+  const el = document.createElement("div");
+  el.className = "offer";
+  el.innerHTML =
+    `<div><div class="o-name">${cat.emoji} ${esc(m.name)} ` +
+    `<span class="badge ${m.active !== false ? "ok" : "dim"}">${m.active !== false ? "응찰 중" : "휴업"}</span></div>` +
+    `<div class="o-perk">기준가 ${money(m.basePrice, m.currency)}/${cat.unit} · 최대 할인 ${m.maxDiscountPct || 0}% · ${esc(m.perks || "서비스 없음")}</div></div>`;
+  const wrap = document.createElement("div");
+  wrap.style.cssText = "margin-left:auto; display:flex; gap:8px";
+  const tgl = document.createElement("button");
+  tgl.className = "btn ghost small";
+  tgl.textContent = m.active !== false ? "휴업" : "개점";
+  tgl.addEventListener("click", async () => {
+    await updateDoc(doc(db, "agora_merchants", m.id), { active: m.active === false });
+  });
+  const del = document.createElement("button");
+  del.className = "btn ghost small";
+  del.textContent = "삭제";
+  del.addEventListener("click", async () => {
+    if (!confirm(`'${m.name}' 에이전트를 폐점할까요?`)) return;
+    await deleteDoc(doc(db, "agora_merchants", m.id));
+    toast("폐점 처리했습니다");
+  });
+  wrap.appendChild(tgl); wrap.appendChild(del);
+  el.appendChild(wrap);
+  return el;
+}
+
+function watchBookings() {
+  onSnapshot(
+    query(collection(db, "agora_deals"), orderBy("ts", "desc"), limit(100)),
+    (snap) => {
+      const rows = [];
+      snap.forEach((d) => { const x = d.data(); if (myIds.has(x.merchantId)) rows.push({ id: d.id, ...x }); });
+      const box = $("myBookings");
+      if (!rows.length) { box.innerHTML = '<p class="hint">아직 체결이 없습니다. 가게를 등록해 두면 손님 요청에 자동 응찰합니다.</p>'; return; }
+      // 새 체결 알림
+      const ids = new Set(rows.map((r) => r.id));
+      if (knownDealIds) {
+        for (const id of ids) if (!knownDealIds.has(id)) {
+          $("newDealFlash").hidden = false;
+          toast("🔔 새 예약이 체결됐습니다!");
+          setTimeout(() => { $("newDealFlash").hidden = true; }, 6000);
+          break;
+        }
+      }
+      knownDealIds = ids;
+      box.innerHTML = "";
+      for (const d of rows.slice(0, 20)) {
+        const r = document.createElement("div");
+        r.className = "deal-row";
+        r.innerHTML =
+          `<span class="badge ok">예약 확정</span>` +
+          `<span><b>${esc(d.merchantName)}</b> — ${esc(d.requestText).slice(0, 44)}</span>` +
+          `<span class="hint">${esc(d.dealNo)} · ${timeAgo(d.ts)}${d.auto ? " · 자동승인" : ""}</span>` +
+          `<span class="d-price num">${money(d.price, d.currency)}</span>`;
+        box.appendChild(r);
+      }
+    }
+  );
+}
+
+(async () => {
+  try { me = await ensureAuth(); }
+  catch { toast("연결 실패 — 새로고침 해주세요"); return; }
+  watchMyShops();
+  watchBookings();
+})();
+</script>
+</body>
+</html>
