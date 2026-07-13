@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AINEMA — AI 시네마의 모든 것</title>
+  <meta name="description" content="전 세계 AI 생성 단편영화, 애니메이션, 뮤직비디오를 한 곳에서. 매일 새로운 AI 시네마를 큐레이션합니다.">
+  <meta property="og:title" content="AINEMA — AI 시네마의 모든 것">
+  <meta property="og:description" content="AI가 만든 최고의 영상들을 넷플릭스처럼. 매일 새로운 작품을 만나보세요.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://i.ytimg.com/vi/9oryIMNVtto/maxresdefault.jpg">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230b0b0f'/%3E%3Ctext x='32' y='46' font-family='Arial Black' font-size='40' font-weight='900' fill='%23e50914' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://i.ytimg.com">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Intro splash (세션당 1회) -->
+  <div id="splash" hidden><span class="splash-logo">AINEMA</span></div>
+  <header class="header" id="header">
+    <div class="header-inner">
+      <a class="logo" href="#" onclick="location.reload();return false;">AINEMA</a>
+      <nav class="nav" id="nav"></nav>
+      <div class="header-right">
+        <input class="search" id="search" type="search" placeholder="제목·크리에이터·툴 검색" autocomplete="off">
+        <a class="submit-btn" id="submitBtn" href="#submit">작품 제보</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero billboard -->
+    <section class="hero" id="hero"></section>
+    <!-- Rows -->
+    <div class="rows" id="rows"></div>
+  </main>
+
+  <!-- Player modal -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal-body">
+      <button class="modal-close" id="modalClose" aria-label="닫기">×</button>
+      <div class="player-wrap" id="playerWrap"></div>
+      <div class="modal-meta" id="modalMeta"></div>
+    </div>
+  </div>
+
+  <!-- Submit section -->
+  <section class="submit-section" id="submit">
+    <h2>당신의 AI 작품을 세상에 알리세요</h2>
+    <p>AINEMA는 매일 최고의 AI 시네마를 큐레이션합니다.<br>단편영화, 애니메이션, 뮤직비디오 — YouTube 링크만 보내주세요.</p>
+    <a class="submit-cta" href="mailto:specail6247@gmail.com?subject=[AINEMA]%20작품%20제보&body=YouTube%20링크:%0A작품%20소개:%0A사용한%20AI%20툴:">작품 제보하기</a>
+  </section>
+
+  <footer class="footer">
+    <p>AINEMA — AI가 만든 영상 예술의 집. 모든 영상은 YouTube 임베드로 재생되며, 저작권은 각 크리에이터에게 있습니다.</p>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
