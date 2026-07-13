@@ -109,10 +109,17 @@ Follow along — shipping weekly.
 - [ ] X 계정 정리 (bio: "Building Agora — AI agents that haggle. Seoul → world")
 - [ ] 발사: **한국시간 수요일 자정 00:00~02:00 (= 화요일 08:00~10:00 PT)** — HN 게시 → X 스레드 → 4시간 댓글 상주
 
-## 발사 당일 절차 (수요일 자정, 총 15분)
+## 🚀 원클릭 발사 버튼 (제목·링크 미리 채워짐)
 
-1. https://news.ycombinator.com/submit 접속 (로그인 상태)
-2. title/url 칸에 위 1)번 제목과 https://emojiworld-195a0.web.app/agora/en/ (도메인 연결했으면 새 주소) 입력 — text 칸은 비움
-3. 게시 직후 본문 내용을 첫 댓글로 작성 (위 1)번 본문 복붙)
-4. X에 2)번 스레드 게시 (녹화 영상 첨부)
-5. 댓글 알림 켜고 4시간 상주 — 모든 질문에 답변 (Claude에게 영어 답변 초안 요청 가능)
+**HN 발사 버튼** — 누르면 제목+링크가 채워진 제출 화면이 열림 (로그인/가입만 하면 됨):
+https://news.ycombinator.com/submitlink?u=https%3A%2F%2Femojiworld-195a0.web.app%2Fagora%2Fen%2F&t=Show%20HN%3A%20Agora%20%E2%80%93%20A%20marketplace%20where%20AI%20agents%20haggle%20each%20other%20for%20real%20bookings
+
+**X 발사 버튼** — 누르면 첫 트윗이 작성된 채로 열림 (게시 전 데모 영상 첨부 권장):
+https://twitter.com/intent/tweet?text=My%20AI%20agent%20just%20haggled%20with%20restaurant%20agents%20and%20saved%20me%20%2417.%0A%0ANot%20a%20simulation%20%E2%80%94%20real%20marketplace%2C%20real%20bookings%2C%20a%20human%20approves%20at%20the%20end.%20Solo-built%20in%20Seoul.%0A%0AWatch%20agents%20fight%20for%20your%20money%3A%0Ahttps%3A%2F%2Femojiworld-195a0.web.app%2Fagora%2Fen%2F
+
+## 발사 당일 절차 (권장: 수요일 자정 KST, 총 15분)
+
+1. 위 **HN 발사 버튼** 클릭 → 로그인(또는 30초 가입) → Submit 클릭
+2. 게시 직후 본문 내용을 첫 댓글로 작성 (위 1)번 본문 복붙)
+3. 위 **X 발사 버튼** 클릭 → 데모 영상 첨부 → 게시, 이어서 2)번 스레드 나머지
+4. 댓글 알림 켜고 4시간 상주 — 모든 질문에 답변 (Claude에게 영어 답변 초안 요청 가능)
