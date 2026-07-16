@@ -72,6 +72,37 @@ Follow along — shipping weekly.
 
 ---
 
+## 2.5) Threads (Meta) — 언제든 게시 가능, 대화 유도형
+
+**단발 포스트 (500자 제한 내, 복붙용):**
+
+My AI agent just haggled with 3 restaurant agents over a dinner reservation — and saved me $17.
+
+Not a simulation. I built a real marketplace where:
+🏪 Shop owners set 3 rules (base price, max discount, perks)
+🤖 Their agents bid against each other 24/7
+🧑 A human taps "approve" once
+
+Solo-built in Seoul. The agents are negotiating live right now:
+https://emojiworld-195a0.web.app/agora/en/
+
+What's the first thing you'd let an AI book for you?
+
+**스레드 체인 버전 (4연발):**
+
+1/ I watched two AI agents haggle over my dinner reservation last night. One offered $112. My agent said "that's over budget." It came back with $95 + a free welcome drink. I tapped approve. The restaurant got the booking instantly. This is real and live → https://emojiworld-195a0.web.app/agora/en/
+
+2/ How it works: a shop owner opens an "agent" in 30 seconds — base price, how far it can discount, what perks it can throw in. That's it. Their agent now bids on every matching request, 24/7, even while they sleep.
+
+3/ The part nobody talks about with AI agents: control. My marketplace has a human kill switch that freezes every negotiation instantly, and an auto-approve limit ("anything under $30, just book it"). AI does the haggling. Humans keep the keys.
+
+4/ Why I'm building this: big platforms assume every business will have an agent-ready storefront. Millions of small shops never will — unless someone builds their agent FOR them. Starting with Korea's 7M small businesses. Solo founder, shipping weekly. Follow along 🚀
+
+**원클릭 버튼 (이모지 제외 단축판):**
+https://www.threads.net/intent/post?text=My%20AI%20agent%20just%20haggled%20with%203%20restaurant%20agents%20over%20a%20dinner%20reservation%20%E2%80%94%20and%20saved%20me%20%2417.%0A%0ANot%20a%20simulation.%20Shop%20owners%20set%203%20rules%2C%20their%20agents%20bid%2024%2F7%2C%20a%20human%20taps%20approve%20once.%0A%0ASolo-built%20in%20Seoul.%20Agents%20are%20negotiating%20live%20right%20now%3A%0Ahttps%3A%2F%2Femojiworld-195a0.web.app%2Fagora%2Fen%2F%0A%0AWhat%27s%20the%20first%20thing%20you%27d%20let%20an%20AI%20book%20for%20you%3F
+
+**팁:** 데모 15초 녹화 영상을 첨부하면 도달이 몇 배로 뜁니다. 게시 시간은 미국 아침 = 한국 밤 9~11시가 최적. 마지막 질문 문장은 지우지 마세요 — Threads 알고리즘은 답글이 달리는 글을 밀어줍니다.
+
 ## 3) Product Hunt (HN 반응 확인 후 1~2주 뒤)
 
 - **Name:** Agora
