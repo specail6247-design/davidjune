@@ -11,6 +11,53 @@ service cloud.firestore {
       return signedIn() && request.auth.uid == userIdField;
     }
 
+    // ---- 반응 하루 상한 ----
+    // 날짜 키는 서버 시각(request.time, UTC)에서만 뽑는다.
+    // 클라이언트가 날짜를 조작해 새 쿼터 버킷을 만드는 걸 막기 위함.
+    // lib/postsClient.ts의 reactionQuotaDay()와 형식이 같아야 한다.
+    function utcDayKey() {
+      return string(request.time.year()) + '-'
+        + string(request.time.month()) + '-'
+        + string(request.time.day());
+    }
+
+    // 익명 계정은 무한히 찍어낼 수 있으므로 상한을 더 낮게 둔다.
+    // lib/postsClient.ts의 DAILY_REACTION_LIMIT* 와 값이 같아야 한다.
+    function dailyReactionCap() {
+      return request.auth.token.firebase.sign_in_provider == 'anonymous' ? 40 : 120;
+    }
+
+    function myQuotaId() {
+      return request.auth.uid + '_' + utcDayKey();
+    }
+
+    // 반응 생성은 같은 트랜잭션 안에서 쿼터가 증가해야만 통과한다.
+    function reactionQuotaOk(uid) {
+      let quota = getAfter(/databases/$(database)/documents/reaction_quota/$(uid + '_' + utcDayKey()));
+      return quota != null
+        && quota.data.uid == uid
+        && quota.data.day == utcDayKey()
+        && quota.data.count is int
+        && quota.data.count <= dailyReactionCap();
+    }
+
+    match /reaction_quota/{quotaId} {
+      allow read: if signedIn() && quotaId == myQuotaId();
+      allow create: if signedIn()
+        && quotaId == myQuotaId()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.day == utcDayKey()
+        && request.resource.data.count == 1;
+      // 1씩만, 상한까지만 증가. 감소·초기화 불가.
+      allow update: if signedIn()
+        && quotaId == myQuotaId()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.day == utcDayKey()
+        && request.resource.data.count == resource.data.count + 1
+        && request.resource.data.count <= dailyReactionCap();
+      allow delete: if false;
+    }
+
     // ---- 게시물 ----
     match /posts/{postId} {
       allow read: if true;
@@ -27,7 +74,14 @@ service cloud.firestore {
       // 반응: 유저당 1개 (docId == uid)
       match /reactions/{reactorId} {
         allow read: if true;
-        allow create, update: if signedIn()
+        // 새 반응은 하루 쿼터를 소모한다.
+        allow create: if signedIn()
+          && request.auth.uid == reactorId
+          && request.resource.data.emoji is string
+          && request.resource.data.emoji.size() < 32
+          && reactionQuotaOk(reactorId);
+        // 이미 누른 반응의 이모지 변경은 총량이 늘지 않으므로 쿼터를 쓰지 않는다.
+        allow update: if signedIn()
           && request.auth.uid == reactorId
           && request.resource.data.emoji is string
           && request.resource.data.emoji.size() < 32;

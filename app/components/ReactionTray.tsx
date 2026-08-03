@@ -6,6 +6,7 @@ import { useAuth } from '../../lib/AuthContext';
 import {
   REACTION_EMOJIS,
   Reaction,
+  ReactionLimitError,
   setReaction,
   subscribeToReactions,
 } from '../../lib/postsClient';
@@ -21,6 +22,7 @@ export const ReactionTray = ({
   const router = useRouter();
   const [reactions, setReactions] = useState<Reaction[]>([]);
   const [pending, setPending] = useState(false);
+  const [limitHit, setLimitHit] = useState(false);
 
   useEffect(() => {
     if (!postId) return;
@@ -47,9 +49,16 @@ export const ReactionTray = ({
     if (pending) return;
     setPending(true);
     try {
-      await setReaction(postId, user.uid, myReaction === emoji ? null : emoji);
+      await setReaction(postId, user.uid, myReaction === emoji ? null : emoji, {
+        isGuest: user.isAnonymous,
+      });
     } catch (error) {
-      console.error('Reaction failed:', error);
+      if (error instanceof ReactionLimitError) {
+        setLimitHit(true);
+        setTimeout(() => setLimitHit(false), 2600);
+      } else {
+        console.error('Reaction failed:', error);
+      }
     } finally {
       setPending(false);
     }
@@ -72,7 +81,21 @@ export const ReactionTray = ({
           </button>
         );
       })}
+      {limitHit && (
+        <span className="limit-pill" role="status">
+          🚦 ⏳ 24h
+        </span>
+      )}
       <style jsx>{`
+        .limit-pill {
+          font-size: 12px;
+          font-weight: 700;
+          color: #7a5b00;
+          background: linear-gradient(135deg, #fff7d6, #ffeff9);
+          border-radius: 999px;
+          padding: 5px 10px;
+          animation: riseIn 0.2s ease both;
+        }
         .reaction-tray-wrap {
           display: flex;
           gap: 6px;

@@ -13,6 +13,7 @@ import {
   getPhotoTicketStatus,
   PhotoTicketStatus,
   MAX_CAPTION_EMOJIS,
+  MAX_REACTIONS_COUNTED_PER_FAN,
   REACTIONS_PER_TICKET,
 } from '../../../lib/postsClient';
 
@@ -210,6 +211,15 @@ const PostPage = () => {
         )}
         <p className="photo-hint">
           💡 이모지 게시물로 반응(❤️)을 모으면 사진 티켓이 생겨요. 사진은 Picto의 특권!
+          <br />
+          🤝 티켓은 <b>서로 다른 사람</b>의 반응으로 쌓여요 (한 사람당 최대{' '}
+          {MAX_REACTIONS_COUNTED_PER_FAN}개까지).
+          {ticketStatus && ticketStatus.uniqueFans > 0 && (
+            <>
+              {' '}
+              지금까지 <b>{ticketStatus.uniqueFans}명</b>이 반응했어요 👥
+            </>
+          )}
         </p>
       </div>
 
