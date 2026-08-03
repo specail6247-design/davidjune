@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ReactionTray } from './ReactionTray';
 import { CommentDrawer } from './CommentDrawer';
 import { useAuth } from '../../lib/AuthContext';
-import { Post, REACTIONS_PER_TICKET } from '../../lib/postsClient';
+import { Post } from '../../lib/postsClient';
 import {
   followUser,
   unfollowUser,
@@ -128,9 +128,13 @@ export const FeedCard = ({ post, onDelete }: { post: Post; onDelete?: () => void
         <p className="caption">{post.caption}</p>
       </div>
 
+      {/*
+        티켓 진행률은 계정 전체 기준(팬당 상한·셀프 제외)이라 게시물 하나로는 계산할 수 없다.
+        여기서는 이 게시물이 받은 반응 수만 정직하게 보여주고, 실제 티켓 수는 작성 페이지에서 안내한다.
+      */}
       {isMine && reactionCount > 0 && (
-        <div className="ticket-progress" title="반응을 모으면 사진 티켓을 얻어요!">
-          📸 {reactionCount % REACTIONS_PER_TICKET}/{REACTIONS_PER_TICKET}
+        <div className="ticket-progress" title="이 게시물이 받은 반응 수">
+          💗 {reactionCount}
         </div>
       )}
 
