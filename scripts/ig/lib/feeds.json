@@ -1,0 +1,22 @@
+{
+  "niche": "창업·부업·수익화",
+  "note": "kind=google-news 는 query + window 로 URL을 조립한다(when: 연산자). 키워드는 단일어에 가까울수록 신선한 결과가 많다. weight 는 니치 적합도(0~1)로 스코어링에 반영.",
+  "feeds": [
+    { "id": "gn-sidejob",   "kind": "google-news", "name": "구글뉴스:부업",        "query": "부업",           "window": "2d", "weight": 1.0 },
+    { "id": "gn-njob",      "kind": "google-news", "name": "구글뉴스:N잡",         "query": "N잡",            "window": "2d", "weight": 1.0 },
+    { "id": "gn-smallbiz",  "kind": "google-news", "name": "구글뉴스:소상공인",     "query": "소상공인 지원",   "window": "2d", "weight": 1.0 },
+    { "id": "gn-govfund",   "kind": "google-news", "name": "구글뉴스:지원사업",     "query": "창업 지원사업",   "window": "2d", "weight": 1.0 },
+    { "id": "gn-startup",   "kind": "google-news", "name": "구글뉴스:창업",        "query": "창업",           "window": "1d", "weight": 0.9 },
+    { "id": "gn-seller",    "kind": "google-news", "name": "구글뉴스:스마트스토어", "query": "스마트스토어",    "window": "2d", "weight": 0.9 },
+    { "id": "gn-coupang",   "kind": "google-news", "name": "구글뉴스:쿠팡셀러",     "query": "쿠팡 셀러",      "window": "2d", "weight": 0.8 },
+    { "id": "gn-aimoney",   "kind": "google-news", "name": "구글뉴스:AI부업",      "query": "AI 부업",        "window": "3d", "weight": 1.0 },
+    { "id": "gn-freelance", "kind": "google-news", "name": "구글뉴스:프리랜서",     "query": "프리랜서",       "window": "2d", "weight": 0.8 },
+    { "id": "gn-tax",       "kind": "google-news", "name": "구글뉴스:종합소득세",   "query": "종합소득세 환급", "window": "3d", "weight": 0.9 },
+    { "id": "gn-selfemp",   "kind": "google-news", "name": "구글뉴스:자영업",       "query": "자영업",         "window": "1d", "weight": 0.7 },
+
+    { "id": "venturesquare", "kind": "rss", "name": "벤처스퀘어",       "url": "https://www.venturesquare.net/feed", "weight": 0.8 },
+    { "id": "platum",        "kind": "rss", "name": "플래텀",           "url": "https://platum.kr/feed",             "weight": 0.8 },
+    { "id": "byline",        "kind": "rss", "name": "바이라인네트워크", "url": "https://byline.network/feed/",       "weight": 0.6 },
+    { "id": "outstanding",   "kind": "rss", "name": "아웃스탠딩",       "url": "https://outstanding.kr/feed",        "weight": 0.7 }
+  ]
+}
