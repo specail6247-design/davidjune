@@ -36,6 +36,8 @@ body {
 
 /* white-space: pre-line — 카피의 줄바꿈(\n)을 그대로 살려 어디서 끊길지 직접 제어한다.
    후킹 문장이 엉뚱한 데서 잘리면 첫 3초를 잃는다. */
+/* word-break: keep-all — 한국어를 어절 단위로 끊는다. 없으면 한 단어가 두 줄로 갈린다. */
+h1, h2, .sub, .row, .cta, .kicker { word-break: keep-all; }
 h1 { font-size: 92px; line-height: 1.08; letter-spacing: -3.5px; font-weight: 800; white-space: pre-line; }
 h2 { font-size: 62px; line-height: 1.18; letter-spacing: -2px; font-weight: 800; white-space: pre-line; }
 
