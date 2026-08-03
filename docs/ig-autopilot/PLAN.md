@@ -207,21 +207,64 @@ data/ig/
 
 Instagram Graph API 게시에는 사전 준비가 필요하고, 특히 **Meta 앱 심사(`instagram_business_content_publish` 권한)는 승인까지 시간이 걸린다.** 그래서 게시를 마지막 Phase로 미루고, 그 전까지도 시스템이 매일 가치를 내도록 설계했다.
 
-준비물 체크리스트:
-- [ ] 인스타그램 **프로페셔널 계정**(비즈니스/크리에이터)으로 전환
-- [ ] 페이스북 **페이지** 생성 및 인스타 계정과 연결
-- [ ] Meta 개발자 앱 생성
-- [ ] `instagram_business_content_publish` 권한 심사 승인
-- [ ] 장기 액세스 토큰 발급 (60일, 갱신 스크립트 필요)
+### 8-1. 준비 체크리스트
 
-게시 흐름 (릴스):
-1. mp4 → **Firebase Hosting에 업로드** (Graph API는 공개 HTTPS URL만 받는다). 이 프로젝트는 이미 `/ph/**`에 CORS 헤더를 열어둔 전례가 있으므로 `/ig/**` 경로를 같은 방식으로 추가하면 된다.
+- [x] 인스타그램 **프로페셔널 계정**(비즈니스/크리에이터)으로 전환 — 완료
+- [x] 페이스북 **페이지** 생성 및 인스타 계정과 연결 — 완료
+- [ ] Meta 개발자 앱 생성 (앱 유형: **비즈니스**)
+- [ ] 앱에 **Instagram** 제품 추가 → 인스타 계정 연결
+- [ ] 권한 요청: `instagram_business_basic`, `instagram_business_content_publish`
+- [ ] **앱 검수(App Review) 제출** — 권한별로 용도 설명과 **동작 스크린캐스트**를 요구한다. 여기가 시간이 가장 오래 걸린다
+- [ ] 승인 후 토큰 발급 (아래 8-2)
+- [ ] `IG_USER_ID` 확인 — `GET /me/accounts` → 페이지의 `instagram_business_account.id`
+
+### 8-2. 토큰 — 갱신이 필요 없게 발급할 것
+
+토큰 종류를 헷갈리면 60일마다 자동화가 멈춘다.
+
+```
+단기 사용자 토큰 (1시간)
+  → 장기 사용자 토큰 (60일)
+    → 페이지 액세스 토큰  ← 이걸 쓴다
+```
+
+**장기 사용자 토큰에서 파생한 페이지 액세스 토큰은 만료되지 않는다.** 사용자 토큰을 그대로 쓰면
+60일마다 갱신해야 하므로, 반드시 페이지 토큰까지 내려가서 발급받을 것.
+
+발급한 토큰은 `.env.local`(이미 gitignore 대상)에 두고 셸에 export 해서 쓴다. **커밋 금지.**
+
+```bash
+export IG_USER_ID=...
+export IG_ACCESS_TOKEN=...
+```
+
+### 8-3. 게시 흐름 (구현 완료)
+
+```bash
+# 1) mp4 를 공개 URL 로 (Graph API 는 로컬 파일을 받지 않는다)
+node scripts/ig/upload.mjs --slug <슬러그> --deploy
+
+# 2) 컨테이너 생성 + 처리 완료까지 — 여기서 멈춘다
+node scripts/ig/publish.mjs --slug <슬러그>
+
+# 3) 미리보기 확인 후 발행
+node scripts/ig/publish.mjs --slug <슬러그> --confirm
+```
+
+내부적으로:
+1. mp4 → Firebase Hosting `/ig/<날짜>/<슬러그>.mp4` (firebase.json 에 CORS·캐시 헤더 추가함)
 2. `POST /{ig-user-id}/media` — `media_type=REELS`, `video_url`, `cover_url`, `caption`
-3. `GET /{container-id}?fields=status_code` 를 **FINISHED 될 때까지 폴링** (영상은 즉시 준비되지 않는다)
-4. **여기서 정지 → 사용자에게 미리보기 제시 → 승인**
-5. `POST /{ig-user-id}/media_publish`
+3. `GET /{container-id}?fields=status_code` 를 **FINISHED 될 때까지 폴링** — 영상은 즉시 준비되지 않는다
+4. **여기서 정지.** 영상 URL·캡션을 출력하고 멈춘다
+5. `--confirm` 을 붙였을 때만 `POST /{ig-user-id}/media_publish`
 
-⚠️ **5~90초 + 9:16이 아니면 릴스 탭에 노출되지 않고 일반 동영상으로 게시된다.** `render-reel.mjs`가 범위를 벗어나면 경고한다.
+토큰 없이 요청 형태만 보려면 `--dry-run` 을 쓴다.
+
+**주의할 점**
+- ⚠️ **5~90초 + 9:16이 아니면 릴스 탭에 노출되지 않고 일반 동영상으로 게시된다.** `render-reel.mjs` 가 범위를 벗어나면 경고한다.
+- 컨테이너는 **24시간 뒤 만료**된다. 그 안에 발행하지 않으면 다시 만들어야 한다.
+- `firebase deploy` 는 `out/` 전체를 배포한다. `next build` 가 최신인지 확인하고 돌릴 것.
+- 게시 한도는 24시간 이동창 기준 100건. `publish.mjs` 가 매번 남은 한도를 확인한다.
 
 `GET /{ig-id}/content_publishing_limit`으로 잔여 한도를 매번 확인하고 로그에 남긴다.
 
@@ -234,11 +277,12 @@ Instagram Graph API 게시에는 사전 준비가 필요하고, 특히 **Meta �
 | **1** | 수집 + 중복 판정 + 분류 + 아침 브리핑 | ✅ **완료** (328건 → 이슈 174개 검증) | 없음 |
 | **2** | 스케줄링 (매일 아침 자동 실행) | ⬜ 남음 (30분) | 없음 |
 | **3** | **릴스 mp4 자동 생성** + 캐러셀 PNG | ✅ **완료** (27.2초 릴스 검증) | 없음 (Chrome + ffmpeg) |
-| **4** | Hosting 업로드 + 미리보기 | ⬜ 남음 (2시간) | Firebase (이미 사용 중) |
-| **5** | Graph API 릴스 게시 (승인 게이트) | ⬜ 남음 (2시간) | **Meta 앱 심사 — 병목** |
+| **4** | Hosting 업로드 + 미리보기 | ✅ **완료** (`upload.mjs`) | Firebase (이미 사용 중) |
+| **5** | Graph API 릴스 게시 (승인 게이트) | ✅ **코드 완료** (`publish.mjs`) | **Meta 앱 심사 — 남은 유일한 병목** |
 
-Phase 1·3이 끝나 "매일 아침 브리핑 + 캐러셀 이미지 완성" 상태는 이미 동작한다.
-Phase 5는 Meta 앱 심사 승인이 선행되어야 하므로, 심사를 신청해두고 그동안 Phase 2·4를 붙이는 순서가 맞다.
+코드는 전부 끝났다. 남은 건 **Meta 앱 심사 승인 하나**다(8-1 체크리스트).
+승인 전까지도 매일 아침 브리핑과 릴스 초안은 쌓이므로, 심사를 신청해두고 콘텐츠를 먼저 만들면 된다.
+심사가 통과되면 `IG_USER_ID`·`IG_ACCESS_TOKEN`만 넣고 `publish.mjs` 를 돌리면 게시가 시작된다.
 
 ## 10. 스케줄링
 
@@ -261,16 +305,24 @@ Phase 5는 Meta 앱 심사 승인이 선행되어야 하므로, 심사를 신청
 
 ## 11. 사용법
 
+하루 전체 흐름:
+
 ```bash
-# 아침 파이프라인 한 번에 (수집 → 중복판정 → 분류 → 브리핑)
+# ① 아침 파이프라인 (수집 → 중복판정 → 분류 → 브리핑)  ※ 매일 07:00 자동 실행됨
 node scripts/ig/morning.mjs
 
-# 릴스 렌더링 — 주력. mp4 + 커버 JPG 생성
+# ② 릴스 렌더링 — 주력. mp4 + 커버 JPG
 node scripts/ig/render-reel.mjs --slug <슬러그>
 
-# 캐러셀 렌더링 — 같은 draft 로 PNG 도 뽑을 수 있다
-node scripts/ig/render.mjs --slug <슬러그>
+# ③ 공개 URL 로 업로드
+node scripts/ig/upload.mjs --slug <슬러그> --deploy
+
+# ④ 컨테이너 생성 후 정지 → 확인 → 발행
+node scripts/ig/publish.mjs --slug <슬러그>
+node scripts/ig/publish.mjs --slug <슬러그> --confirm
 ```
+
+캐러셀도 필요하면 같은 draft 로 뽑는다: `node scripts/ig/render.mjs --slug <슬러그>`
 
 슬라이드별 노출 시간은 draft JSON의 `sec` 필드로 조절한다(생략하면 유형별 기본값: hook 3.5 / point 3.0 / summary 4.5 / cta 4.0초).
 
@@ -284,7 +336,11 @@ node scripts/ig/render.mjs --slug <슬러그>
 
 ## 12. 남은 작업
 
-1. **Phase 2 스케줄링** — 매일 아침 Claude Code 기상 → 파이프라인 실행 → 브리핑 판단 → 캐러셀 초안.
-2. **Phase 4 Hosting 업로드** — `firebase.json`에 `/ig/**` CORS 헤더 추가(기존 `/ph/**`와 동일 패턴) 후 PNG 배포.
-3. **Phase 5 Graph API 게시** — Meta 앱 심사(`instagram_business_content_publish`) 신청이 선행. 장기 토큰 갱신 스크립트도 함께.
-4. **니치 사전 보강** — 1~2주 운영하며 미분류·오병합 사례를 모아 `taxonomy.json`과 STOPWORDS를 채운다.
+1. **Meta 앱 심사 신청** — 8-1 체크리스트. 코드는 다 됐고 이것만 남았다.
+2. **니치 사전 보강** — 1~2주 운영하며 미분류·오병합 사례를 모아 `taxonomy.json`과 STOPWORDS를 채운다.
+3. **성과 회수 루프** — 게시가 시작되면 `GET /{media-id}/insights`로 조회수·저장·공유를 받아와
+   어떤 후킹·주제가 실제로 퍼졌는지 스코어링에 되먹인다. 지금 스코어는 사전 추정치일 뿐이다.
+4. **글로벌 확장(선택)** — 릴스는 국경을 넘지만 인스타는 언어·관심사로 시청자를 매칭한다.
+   한국 지원금 정보는 구조적으로 한국 시청자가 상한이다. 진짜 글로벌을 노리면 언어 의존도가 낮은
+   니치(예: AI 도구 활용)로 `feeds.json`·`taxonomy.json`을 갈아끼우고 영어 자막을 넣어야 한다.
+   파이프라인 자체는 그대로 쓸 수 있다.

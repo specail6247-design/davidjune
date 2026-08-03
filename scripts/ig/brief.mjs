@@ -146,8 +146,11 @@ export function buildBrief(doc, { top = 3 } = {}) {
   L.push('');
   L.push('### 다음 단계');
   L.push('1. 위 후보 중 1건 선택 (또는 분류 확인 항목에서 승격)');
-  L.push('2. 캐러셀 슬라이드 카피 작성 — 7~10장, 1장=1메시지, 후킹 → 맥락 → 본문 → 요약카드 → CTA');
-  L.push('3. `node scripts/ig/render.mjs --slug <슬러그>` 로 PNG 생성');
+  L.push('2. 원문에서 수치·날짜·조건 확인 — 추측 금지');
+  L.push('3. 릴스 슬라이드 카피 작성 — 7~9장 / 20~40초 / 후킹 → 맥락 → 본문 → 요약카드 → CTA');
+  L.push('4. `node scripts/ig/render-reel.mjs --slug <슬러그>` → mp4 생성');
+  L.push('5. `node scripts/ig/upload.mjs --slug <슬러그> --deploy` → 공개 URL');
+  L.push('6. `node scripts/ig/publish.mjs --slug <슬러그>` → 확인 후 `--confirm` 으로 발행');
   L.push('');
 
   return L.join('\n');
